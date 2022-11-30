@@ -8,7 +8,7 @@ import hifigan
 from model import FastSpeech2, FastSpeech2_StyleEncoder, FastSpeech2_StyleEncoder_Discriminator, FastSpeech2_StyleEncoder_Multilingual, FastSpeech2_StyleEncoder_Multilingual_LossStyle 
 from model import FastSpeech2_MultiSpeakers_MultiLangs, FastSpeech2_StyleEncoder_HifiGan, Generator, MultiPeriodDiscriminator, MultiScaleDiscriminator, ScheduledOptim, FastSpeech2_StyleEncoder_Multispeaker
 from model import ScheduledOptim_Diffusion
-from model import FS_Multilingual_Diffusion
+from model import FastSpeech2_StyleEncoder_Multilingual_Diffusion
 from model import FastSpeech2_Adaptation_Multilingualism
 from model import FastSpeech2_Denoiser
 from model import ECAPA_TDNN_Discriminator
@@ -108,21 +108,48 @@ def get_model_fastSpeech2_StyleEncoder_MultiLanguage_1(args, configs, device, tr
 def get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion(args, configs, device, train=False):
     (preprocess_config, model_config, train_config) = configs
 
-    model = FS_Multilingual_Diffusion(args, preprocess_config, model_config, train_config).to(device)
-    if True:
-        ckpt_path="/StypeSpeech_MultiLangs_ESPEAK_300000.pth.tar"
-        # print("load checkpoint: ", ckpt_path)
-        # ckpt = torch.load(ckpt_path)
-        # model.load_state_dict(ckpt["model"], strict=True)
-
+    model = FastSpeech2_StyleEncoder_Multilingual_Diffusion(args, preprocess_config, model_config, train_config).to(device)
+    if args.restore_step:
+        ckpt_path = train_config["checkpoint"]["pretrained"]
         print("load checkpoint: ", ckpt_path)
         ckpt = torch.load(ckpt_path)
-        tmp = OrderedDict() 
-        key_reject = ["speaker_emb.weight", "encoder.src_word_emb.weight"]
-        for key,val in ckpt["model"].items():
-            if key not in key_reject:
-                tmp[key] = val
-        model.load_state_dict(tmp, strict=False)
+        model.load_state_dict(ckpt["model"], strict=True)
+
+        # print("load checkpoint: ", ckpt_path)
+        # ckpt = torch.load(ckpt_path)
+        # tmp = OrderedDict()
+        # # key_reject = ["speaker_emb.weight", "encoder.src_word_emb.weight"]
+        # key_reject = ["encoder.position_enc", "decoder.position_enc", "speaker_emb.weight", "encoder.src_word_emb.weight"]
+        # for key,val in ckpt["model"].items():
+        #     if key not in key_reject:
+        #         tmp[key] = val
+        # model.load_state_dict(tmp, strict=False)
+
+    if train:
+        scheduled_optim = ScheduledOptim_Diffusion(
+            args, model, train_config, model_config, args.restore_step
+        )
+        if args.restore_step:
+            scheduled_optim.load_state_dict(ckpt["optimizer"])
+        model.train()
+        return model, scheduled_optim
+
+    model.eval()
+    model.requires_grad_ = False
+    return model
+
+def get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion1(args, configs, device, train=False):
+    (preprocess_config, model_config, train_config) = configs
+
+    model = FastSpeech2_StyleEncoder_Multilingual_Diffusion(args, preprocess_config, model_config, train_config).to(device)
+    if args.restore_step:
+        ckpt_path = os.path.join(
+            train_config["path"]["ckpt_path"],
+            "{}.pth.tar".format(args.restore_step),
+        )
+        ckpt = torch.load(ckpt_path)
+        model.load_state_dict(ckpt["model"], strict=True)
+        print("Load model: ", ckpt_path)
 
     if train:
         scheduled_optim = ScheduledOptim_Diffusion(

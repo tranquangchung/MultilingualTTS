@@ -95,6 +95,9 @@ class Preprocessor:
         info_list = []
         user_list = []
         lang_list = []
+        max_seq_len = -float('inf')
+        mel_min = np.ones(80) * float('inf')
+        mel_max = np.ones(80) * -float('inf')
         with open(os.path.join(self.out_dir, 'metadata.csv'), encoding='utf-8') as f:
             for line in f:
                 tmp = line.strip().split('|') # basename, lang, user_id, raw_text
@@ -115,13 +118,17 @@ class Preprocessor:
         ########################
         for ret in results:
             if ret is not None:
-                info, pitch, energy, n = ret
+                info, pitch, energy, n, m_min, m_max = ret
                 out.append(info)
 
                 if len(pitch) > 0:
                     pitch_scaler.partial_fit(pitch.reshape((-1, 1)))
                 if len(energy) > 0:
                     energy_scaler.partial_fit(energy.reshape((-1, 1)))
+                mel_min = np.minimum(mel_min, m_min)
+                mel_max = np.maximum(mel_max, m_max)
+                if n > max_seq_len:
+                    max_seq_len = n
                 n_frames += n
         user_unique = sorted(list(set(user_list)))
         for index_spk, speaker in enumerate(user_unique):
@@ -174,6 +181,9 @@ class Preprocessor:
                     float(energy_mean),
                     float(energy_std),
                 ],
+                "spec_min": mel_min.tolist(),
+                "spec_max": mel_max.tolist(),
+                "max_seq_len": max_seq_len,
             }
             f.write(json.dumps(stats))
 
@@ -372,6 +382,8 @@ class Preprocessor:
             self.remove_outlier(pitch),
             self.remove_outlier(energy),
             mel_spectrogram.shape[1],
+            np.min(mel_spectrogram, axis=1),
+            np.max(mel_spectrogram, axis=1),
         )
 
 

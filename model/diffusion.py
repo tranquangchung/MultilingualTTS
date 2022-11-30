@@ -11,7 +11,7 @@ from inspect import isfunction
 
 from .modules_diffusion import Denoiser
 from utils.tools import get_noise_schedule_list
-
+import pdb
 
 def exists(x):
     return x is not None
@@ -254,11 +254,14 @@ class GaussianDiffusionShallow(nn.Module):
             betas * np.sqrt(alphas_cumprod_prev) / (1. - alphas_cumprod)))
         self.register_buffer("posterior_mean_coef2", to_torch(
             (1. - alphas_cumprod_prev) * np.sqrt(alphas) / (1. - alphas_cumprod)))
-
         with open(
                 os.path.join(preprocess_config["path"]["preprocessed_path"], "stats.json")
         ) as f:
             stats = json.load(f)
+            # spec_min = -1*np.ones(80)
+            # spec_max = np.ones(80)
+            # self.register_buffer("spec_min", torch.FloatTensor(spec_min)[None, None, :model_config["denoiser"]["keep_bins"]])
+            # self.register_buffer("spec_max", torch.FloatTensor(spec_max)[None, None, :model_config["denoiser"]["keep_bins"]])
             self.register_buffer("spec_min", torch.FloatTensor(stats["spec_min"])[None, None, :model_config["denoiser"]["keep_bins"]])
             self.register_buffer("spec_max", torch.FloatTensor(stats["spec_max"])[None, None, :model_config["denoiser"]["keep_bins"]])
         self.aux_mel = None
@@ -416,14 +419,52 @@ class GaussianDiffusionShallow(nn.Module):
             x = mel
             x = self.norm_spec(x)
             x = x.transpose(1, 2)[:, None, :, :]  # [B, 1, M, T]
+            # output, epsilon = self.p_losses(x, t, self.cond, mask=mel_mask)
             output, epsilon, loss = self.p_losses(x, t, self.cond, mask=mel_mask)
+            output = self.denorm_spec(output)
         return output, epsilon, loss, t
 
     def norm_spec(self, x):
+        # return x
         return (x - self.spec_min) / (self.spec_max - self.spec_min) * 2 - 1
 
     def denorm_spec(self, x):
+        # return x
         return (x + 1) / 2 * (self.spec_max - self.spec_min) + self.spec_min
 
     def out2mel(self, x):
         return x
+
+    def forward1(self, mel, cond, mel_mask, K_step=100):
+        assert self.aux_mel is not None
+        b, *_, device = *cond.shape, cond.device
+        output=epsilon = None
+        loss=t = torch.tensor([0.], device=device, requires_grad=False)
+        self.cond = cond.transpose(1, 2)
+        if mel is None:
+            output = self.sampling1(K_step)
+        else:
+            t = torch.randint(0, self.K_step, (b,), device=device).long()
+            x = mel
+            x = self.norm_spec(x)
+            x = x.transpose(1, 2)[:, None, :, :]  # [B, 1, M, T]
+            # output, epsilon = self.p_losses(x, t, self.cond, mask=mel_mask)
+            output, epsilon, loss = self.p_losses(x, t, self.cond, mask=mel_mask)
+            output = self.denorm_spec(output)
+        return output, epsilon, loss, t
+
+    @torch.no_grad()
+    def sampling1(self, K_step=100):
+        b, *_, device = *self.cond.shape, self.cond.device
+        # t = self.K_step
+        t = K_step
+        fs2_mels = self.norm_spec(self.aux_mel)
+        fs2_mels = fs2_mels.transpose(1, 2)[:, None, :, :]
+
+        x = self.q_sample(x_start=fs2_mels, t=torch.tensor([t - 1], device=device).long())
+        for i in tqdm(reversed(range(0, t)), desc="sample time step", total=t):
+            x = self.p_sample(x, torch.full((b,), i, device=device, dtype=torch.long), self.cond)
+        x = x[:, 0].transpose(1, 2)
+        output = self.denorm_spec(x)
+
+        return output

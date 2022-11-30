@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#PBS -q GPU-LA
-#PBS -N tts_processing
+#PBS -q GPU-S
+#PBS -N tts_processing_diffusion_V3_continuous_training
 #PBS -l select=2:ngpus=1
 #PBS -j oe
 #PBS -M bktranquangchung1@gmail.com -m be

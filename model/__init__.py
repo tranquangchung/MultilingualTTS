@@ -4,6 +4,7 @@ from .fastspeech2_melstyleEncoder_discriminator import FastSpeech2_StyleEncoder_
 from .fastspeech2_melstyleEncoder_multilingual import FastSpeech2_StyleEncoder_Multilingual
 from .loss import FastSpeech2Loss, FastSpeech2Loss_MultiLingual, FastSpeech2Loss_MultiLingual_Wav2vec2, StyleLoss
 from .loss_diffusion import DiffusionLoss
+from .loss import FastSpeech2Loss_MultiLingual_Diffusion
 from .optimizer import ScheduledOptim, ScheduledOptim_Diffusion
 from .Discriminators import Discriminator
 from .fastspeech2_melstyleEncoder_multilingual_Loss_Style_Emb import FastSpeech2_StyleEncoder_Multilingual_LossStyle
@@ -16,4 +17,4 @@ from .HifiGan import Generator, MultiPeriodDiscriminator, MultiScaleDiscriminato
 from .ecapa_tdnn import ECAPA_TDNN_Discriminator
 from .fastspeech2_denoise import FastSpeech2_Denoiser
 from .fastspeech2_adaptation_multilingualism import FastSpeech2_Adaptation_Multilingualism
-from .fastspeech2_melstyleEncoder_multilingual_diffusion import FS_Multilingual_Diffusion
+from .fastspeech2_melstyleEncoder_multilingual_diffusion import FastSpeech2_StyleEncoder_Multilingual_Diffusion

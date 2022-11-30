@@ -97,16 +97,16 @@ class FastSpeech2_StyleEncoder_Multilingual(nn.Module):
         postnet_output = self.postnet(output) + output
 
         return (
-            output,
-            postnet_output,
-            p_predictions,
-            e_predictions,
-            log_d_predictions,
-            d_rounded,
-            src_masks,
-            mel_masks,
-            src_lens,
-            mel_lens,
+            output, # 0
+            postnet_output, # 1
+            p_predictions, # 2
+            e_predictions, # 3
+            log_d_predictions, # 4
+            d_rounded, # 5
+            src_masks, # 6
+            mel_masks, # 7
+            src_lens, # 8
+            mel_lens, # 9
         )
        
     def get_style_vector(self, mel_target, mel_len=None):

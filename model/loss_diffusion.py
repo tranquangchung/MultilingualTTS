@@ -67,7 +67,6 @@ class DiffusionLoss(nn.Module):
             energy_loss = self.get_energy_loss(energy_predictions, energy_targets)
 
         total_loss = sum(duration_loss.values()) + sum(pitch_loss.values()) + energy_loss
-        pdb.set_trace()
         if self.model == "aux":
             noise_loss = torch.zeros(1).to(mel_targets.device)
             mel_loss = self.get_mel_loss(mel_predictions, mel_targets)
