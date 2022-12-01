@@ -9,6 +9,7 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
 from utils.model import get_vocoder, get_param_num, get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion
+from utils.model import get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion_Style
 from utils.tools import to_device, log_diffusion, log, synth_one_sample, synth_one_sample_multilingual_diffusion
 from model import FastSpeech2Loss_MultiLingual_Diffusion
 from dataset_multi import Dataset
@@ -43,8 +44,9 @@ def main(args, configs):
 
     # Prepare model
     # model, optimizer = get_model(args, configs, device, train=True)
-    model, optimizer = get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion(args, configs, device, train=True)
-    print(model)
+    # model, optimizer = get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion(args, configs, device, train=True)
+    model, optimizer = get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion_Style(args, configs, device, train=True)
+    # print(model)
     model = nn.DataParallel(model)
     num_param = get_param_num(model)
     Loss = FastSpeech2Loss_MultiLingual_Diffusion(preprocess_config, model_config).to(device)
@@ -197,12 +199,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model",
         type=str,
-        choices=["naive", "aux", "shallow"],
+        choices=["naive", "aux", "shallow", "shallowstyle"],
         required=True,
         help="training model type",
     )
     args = parser.parse_args()
-    if args.model in ["aux", "shallow"]:
+    if args.model in ["aux", "shallow", "shallowstyle"]:
         train_tag = "shallow"
     elif args.model == "naive":
         train_tag = "naive"

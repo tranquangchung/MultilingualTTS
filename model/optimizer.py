@@ -70,7 +70,7 @@ class ScheduledOptim_Diffusion:
             # self.current_step -= train_config["step"]["total_step_aux"]
         if self.model == "aux":
             self.init_lr = np.power(model_config["transformer"]["encoder_hidden"], -0.5)
-        elif self.model in ["naive", "shallow"]:
+        elif self.model in ["naive", "shallow", "shallowstyle"]:
             self.init_lr = train_config["optimizer"]["init_lr"]
 
     def step_and_update_lr(self):
@@ -96,7 +96,7 @@ class ScheduledOptim_Diffusion:
             for s in self.anneal_steps:
                 if self.current_step > s:
                     lr = lr * self.anneal_rate
-        elif self.model in ["naive", "shallow"]:
+        elif self.model in ["naive", "shallow", "shallowstyle"]:
             lr = self.init_lr
             for s in self.anneal_steps:
                 if self.current_step > s:

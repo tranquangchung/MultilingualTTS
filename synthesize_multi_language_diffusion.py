@@ -67,6 +67,7 @@ def synthesize1(model, configs, vocoder, batch, control_values, args):
     ref_mel = torch.from_numpy(ref_mel_spectrogram).transpose(0,1).unsqueeze(0).to(device=device)
     # Extract style vector
     style_vector = model.get_style_vector(ref_mel)
+    pdb.set_trace()
     # Forward
     src = torch.from_numpy(batch[4]).to(device=device)
     src_len = torch.from_numpy(batch[5]).to(device=device)
@@ -174,6 +175,7 @@ if __name__ == "__main__":
     # Get model
     # model = get_model(args, configs, device, train=False)
     model = get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion1(args, configs, device, train=False)
+    print(model)
     pytorch_total_params = sum(p.numel() for p in model.parameters())
     pytorch_total_params_trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print("pytorch_total_params", pytorch_total_params)

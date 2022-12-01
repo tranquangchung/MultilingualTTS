@@ -5,7 +5,7 @@ from torch.nn import functional as F
 import math
 
 from utils.tools import make_positions
-
+import pdb
 
 def Embedding(num_embeddings, embedding_dim, padding_idx=None):
     m = nn.Embedding(num_embeddings, embedding_dim, padding_idx=padding_idx)
@@ -668,6 +668,44 @@ class ResidualBlock(nn.Module):
 
         y = x + diffusion_step
         y = self.conv_layer(y) + conditioner
+
+        gate, filter = torch.chunk(y, 2, dim=1)
+        y = torch.sigmoid(gate) * torch.tanh(filter)
+
+        y = self.output_projection(y)
+        residual, skip = torch.chunk(y, 2, dim=1)
+
+        return (x + residual) / math.sqrt(2.0), skip
+
+class ResidualStyleBlock(nn.Module):
+    """ Residual Block """
+
+    def __init__(self, d_encoder, residual_channels, style_layers, dropout):
+        super(ResidualStyleBlock, self).__init__()
+        self.conv_layer = ConvNorm(
+            residual_channels,
+            2 * residual_channels,
+            kernel_size=3,
+            stride=1,
+            padding=int((3 - 1) / 2),
+            dilation=1,
+        )
+        self.diffusion_projection = LinearNorm(residual_channels, residual_channels)
+        self.style_projection = LinearNorm(style_layers, 2*residual_channels)
+        self.conditioner_projection = ConvNorm(
+            d_encoder, 2 * residual_channels, kernel_size=1
+        )
+        self.output_projection = ConvNorm(
+            residual_channels, 2 * residual_channels, kernel_size=1
+        )
+
+    def forward(self, x, conditioner, style_vector, diffusion_step, mask=None):
+        diffusion_step = self.diffusion_projection(diffusion_step).unsqueeze(-1)
+        conditioner = self.conditioner_projection(conditioner)
+
+        y = x + diffusion_step
+        style_vector = self.style_projection(style_vector).unsqueeze(-1)
+        y = self.conv_layer(y) + conditioner + style_vector
 
         gate, filter = torch.chunk(y, 2, dim=1)
         y = torch.sigmoid(gate) * torch.tanh(filter)
