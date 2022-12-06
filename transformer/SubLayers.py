@@ -106,7 +106,7 @@ class StyleAdaptiveLayerNorm(nn.Module):
         # style
         style = self.style(style_code).unsqueeze(1)
         gamma, beta = style.chunk(2, dim=-1)
-        
+
         out = self.norm(input)
         out = gamma * out + beta
         return out

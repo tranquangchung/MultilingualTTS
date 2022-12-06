@@ -677,6 +677,36 @@ class ResidualBlock(nn.Module):
 
         return (x + residual) / math.sqrt(2.0), skip
 
+
+class StyleAdaptiveLayerNorm(nn.Module):
+  def __init__(self, in_channel, style_dim):
+    super(StyleAdaptiveLayerNorm, self).__init__()
+    self.in_channel = in_channel
+    self.norm = nn.LayerNorm(in_channel, elementwise_affine=False)
+
+    self.style = AffineLinear(style_dim, in_channel * 2)
+    self.style.affine.bias.data[:in_channel] = 1
+    self.style.affine.bias.data[in_channel:] = 0
+
+  def forward(self, input, style_code):
+    # style
+    style = self.style(style_code).unsqueeze(1)
+    gamma, beta = style.chunk(2, dim=-1)
+
+    input = torch.transpose(input, 2, 1)
+    out = self.norm(input)
+    out = gamma * out + beta
+    return torch.transpose(out, 2, 1)
+
+class AffineLinear(nn.Module):
+  def __init__(self, in_dim, out_dim):
+    super(AffineLinear, self).__init__()
+    affine = nn.Linear(in_dim, out_dim)
+    self.affine = affine
+
+  def forward(self, input):
+    return self.affine(input)
+
 class ResidualStyleBlock(nn.Module):
     """ Residual Block """
 
@@ -691,7 +721,7 @@ class ResidualStyleBlock(nn.Module):
             dilation=1,
         )
         self.diffusion_projection = LinearNorm(residual_channels, residual_channels)
-        self.style_projection = LinearNorm(style_layers, 2*residual_channels)
+        self.style_projection = StyleAdaptiveLayerNorm(residual_channels*2, style_layers)
         self.conditioner_projection = ConvNorm(
             d_encoder, 2 * residual_channels, kernel_size=1
         )
@@ -704,8 +734,8 @@ class ResidualStyleBlock(nn.Module):
         conditioner = self.conditioner_projection(conditioner)
 
         y = x + diffusion_step
-        style_vector = self.style_projection(style_vector).unsqueeze(-1)
-        y = self.conv_layer(y) + conditioner + style_vector
+        y = self.conv_layer(y) + conditioner
+        y = self.style_projection(y, style_vector)
 
         gate, filter = torch.chunk(y, 2, dim=1)
         y = torch.sigmoid(gate) * torch.tanh(filter)

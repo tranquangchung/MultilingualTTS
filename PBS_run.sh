@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -q GPU-S
-#PBS -N tts_diffusion_style
+#PBS -N tts_diffusion_style_AdaIN
 #PBS -l select=2:ngpus=1
 #PBS -j oe
 #PBS -M bktranquangchung1@gmail.com -m be

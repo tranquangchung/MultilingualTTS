@@ -551,8 +551,8 @@ class GaussianDiffusionShallowStyle(nn.Module):
     posterior_log_variance_clipped = extract(self.posterior_log_variance_clipped, t, x_t.shape)
     return posterior_mean, posterior_variance, posterior_log_variance_clipped
 
-  def p_mean_variance(self, x, t, cond, clip_denoised: bool):
-    noise_pred = self.denoise_fn(x, t, cond)
+  def p_mean_variance(self, x, t, cond, style, clip_denoised: bool):
+    noise_pred = self.denoise_fn(x, t, cond, style)
     epsilon = self.predict_start_from_noise(x, t=t, noise=noise_pred)
 
     if clip_denoised:
@@ -562,9 +562,9 @@ class GaussianDiffusionShallowStyle(nn.Module):
     return model_mean, posterior_variance, posterior_log_variance
 
   @torch.no_grad()
-  def p_sample(self, x, t, cond, clip_denoised=True, repeat_noise=False):
+  def p_sample(self, x, t, cond, style, clip_denoised=True, repeat_noise=False):
     b, *_, device = *x.shape, x.device
-    model_mean, _, model_log_variance = self.p_mean_variance(x=x, t=t, cond=cond, clip_denoised=clip_denoised)
+    model_mean, _, model_log_variance = self.p_mean_variance(x=x, t=t, cond=cond, style=style, clip_denoised=clip_denoised)
     noise = noise_like(x.shape, device, repeat_noise)
     # no noise when t == 0
     nonzero_mask = (1 - (t == 0).float()).reshape(b, *((1,) * (len(x.shape) - 1)))
@@ -656,7 +656,7 @@ class GaussianDiffusionShallowStyle(nn.Module):
     return kld
 
   @torch.no_grad()
-  def sampling(self):
+  def sampling(self, style):
     b, *_, device = *self.cond.shape, self.cond.device
     t = self.K_step
     fs2_mels = self.norm_spec(self.aux_mel)
@@ -664,7 +664,7 @@ class GaussianDiffusionShallowStyle(nn.Module):
 
     x = self.q_sample(x_start=fs2_mels, t=torch.tensor([t - 1], device=device).long())
     for i in tqdm(reversed(range(0, t)), desc="sample time step", total=t):
-      x = self.p_sample(x, torch.full((b,), i, device=device, dtype=torch.long), self.cond)
+      x = self.p_sample(x, torch.full((b,), i, device=device, dtype=torch.long), self.cond, style)
     x = x[:, 0].transpose(1, 2)
     output = self.denorm_spec(x)
 
@@ -677,7 +677,7 @@ class GaussianDiffusionShallowStyle(nn.Module):
     loss = t = torch.tensor([0.], device=device, requires_grad=False)
     self.cond = cond.transpose(1, 2)
     if mel is None:
-      output = self.sampling()
+      output = self.sampling(style)
     else:
       t = torch.randint(0, self.K_step, (b,), device=device).long()
       x = mel
@@ -699,26 +699,8 @@ class GaussianDiffusionShallowStyle(nn.Module):
   def out2mel(self, x):
     return x
 
-  def forward1(self, mel, cond, mel_mask, K_step=100):
-    assert self.aux_mel is not None
-    b, *_, device = *cond.shape, cond.device
-    output = epsilon = None
-    loss = t = torch.tensor([0.], device=device, requires_grad=False)
-    self.cond = cond.transpose(1, 2)
-    if mel is None:
-      output = self.sampling1(K_step)
-    else:
-      t = torch.randint(0, self.K_step, (b,), device=device).long()
-      x = mel
-      x = self.norm_spec(x)
-      x = x.transpose(1, 2)[:, None, :, :]  # [B, 1, M, T]
-      # output, epsilon = self.p_losses(x, t, self.cond, mask=mel_mask)
-      output, epsilon, loss = self.p_losses(x, t, self.cond, mask=mel_mask)
-      output = self.denorm_spec(output)
-    return output, epsilon, loss, t
-
   @torch.no_grad()
-  def sampling1(self, K_step=100):
+  def sampling1(self, style, K_step=100):
     b, *_, device = *self.cond.shape, self.cond.device
     # t = self.K_step
     t = K_step
@@ -727,8 +709,26 @@ class GaussianDiffusionShallowStyle(nn.Module):
 
     x = self.q_sample(x_start=fs2_mels, t=torch.tensor([t - 1], device=device).long())
     for i in tqdm(reversed(range(0, t)), desc="sample time step", total=t):
-      x = self.p_sample(x, torch.full((b,), i, device=device, dtype=torch.long), self.cond)
+      x = self.p_sample(x, torch.full((b,), i, device=device, dtype=torch.long), self.cond, style)
     x = x[:, 0].transpose(1, 2)
     output = self.denorm_spec(x)
 
     return output
+
+  def forward1(self, mel, cond, style, mel_mask, K_step=100):
+    assert self.aux_mel is not None
+    b, *_, device = *cond.shape, cond.device
+    output = epsilon = None
+    loss = t = torch.tensor([0.], device=device, requires_grad=False)
+    self.cond = cond.transpose(1, 2)
+    if mel is None:
+      output = self.sampling1(style, K_step)
+    else:
+      t = torch.randint(0, self.K_step, (b,), device=device).long()
+      x = mel
+      x = self.norm_spec(x)
+      x = x.transpose(1, 2)[:, None, :, :]  # [B, 1, M, T]
+      # output, epsilon = self.p_losses(x, t, self.cond, mask=mel_mask)
+      output, epsilon, loss = self.p_losses(x, t, self.cond, style, mask=mel_mask)
+      output = self.denorm_spec(output)
+    return output, epsilon, loss, t

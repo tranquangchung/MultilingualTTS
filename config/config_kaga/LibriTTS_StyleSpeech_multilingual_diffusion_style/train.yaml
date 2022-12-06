@@ -1,9 +1,9 @@
 path:
-  ckpt_path: "/home/s2220411/Code/Log_data/training/Multilingual_Style_V1"
-  log_path: "/home/s2220411/Code/Log_data/training/Multilingual_Style_V1"
-  result_path: "/home/s2220411/Code/Log_data/training/Multilingual_Style_V1"
+  ckpt_path: "/home/s2220411/Code/Log_data/training/Multilingual_Style_V2_1"
+  log_path: "/home/s2220411/Code/Log_data/training/Multilingual_Style_V2_1"
+  result_path: "/home/s2220411/Code/Log_data/training/Multilingual_Style_V2_1"
 checkpoint:
-  pretrained: "/home/s2220411/Code/Log_data/training/Multilingual_V3_3/900000.pth.tar"
+  pretrained: "/home/s2220411/Code/Log_data/training/Multilingual_V2/480000.pth.tar"
   path_hifigan: "/home/s2220411/Code/FastSpeech2_multilingual"
 optimizer:
   batch_size: 40

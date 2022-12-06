@@ -5,6 +5,7 @@ path:
 checkpoint:
   pretrained: "/home/ldap-users/s2220411/Code/Log_Training/FastSpeech2/logtrain/multilingual_V2/480000.pth.tar"
   #  pretrained: "/home/ldap-users/s2220411/Code/Log_Training/FastSpeech2/logtrain/multilingual_test_4/100000.pth.tar"
+#  pretrained: "/home/ldap-users/s2220411/Code/Log_Training/FastSpeech2/pretrained/900000.pth.tar"
   path_hifigan: "/home/ldap-users/s2220411/Code/FastSpeech2_multilingual"
 optimizer:
   batch_size: 4

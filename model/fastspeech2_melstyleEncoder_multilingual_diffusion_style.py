@@ -137,53 +137,53 @@ class FastSpeech2_StyleEncoder_Multilingual_Diffusion_Style(nn.Module):
       src_lens, # 10
       mel_lens, # 11
     )
-  #
-  # def get_style_vector(self, mel_target, mel_len=None):
-  #   mel_mask = get_mask_from_lengths(mel_len) if mel_len is not None else None
-  #   style_vector = self.melstyle_encoder(mel_target, mel_mask)
-  #   return style_vector
-  #
-  # def inference(self, style_vector, src_seq, language, src_len=None, max_src_len=None, return_attn=False,
-  #               p_control=1.0, e_control=1.0, d_control=1.0, K_step=30):
-  #   src_mask = get_mask_from_lengths(src_len, max_src_len)
-  #   # Encoder
-  #   output = self.encoder(src_seq, style_vector, src_mask)
-  #
-  #   if self.language_emb is not None:
-  #     output = output + self.language_emb(language).unsqueeze(1).expand(
-  #       -1, max_src_len, -1
-  #     )
-  #
-  #   (
-  #     output,
-  #     p_predictions,
-  #     e_predictions,
-  #     log_d_predictions,
-  #     d_rounded,
-  #     mel_lens,
-  #     mel_masks,
-  #   ) = self.variance_adaptor(
-  #     output,
-  #     src_mask,
-  #     p_control=p_control,
-  #     e_control=e_control,
-  #     d_control=d_control,
-  #   )
-  #   mels = None # only for inference
-  #   if self.model == "naive":
-  #     (output, epsilon_predictions, loss, diffusion_step,) = self.diffusion(mels, output, mel_masks,)
-  #   elif self.model in ["aux", "shallow"]:
-  #     epsilon_predictions = noise_loss = diffusion_step = None
-  #     cond = output.clone()
-  #     output, _ = self.decoder(output, style_vector, mel_masks)
-  #     output = self.mel_linear(output)
-  #     self.diffusion.aux_mel = output.clone()
-  #     if self.model == "shallow":
-  #       (output_diffusion, epsilon_predictions, loss, diffusion_step,) = self.diffusion.forward1(mels, cond, mel_masks, K_step)
-  #   else:
-  #     raise NotImplementedError
-  #
-  #   return (
-  #     output_diffusion, # 0
-  #     output_diffusion# epsilon_predictions, # 1
-  #   )
+
+  def get_style_vector(self, mel_target, mel_len=None):
+    mel_mask = get_mask_from_lengths(mel_len) if mel_len is not None else None
+    style_vector = self.melstyle_encoder(mel_target, mel_mask)
+    return style_vector
+
+  def inference(self, style_vector, src_seq, language, src_len=None, max_src_len=None, return_attn=False,
+                p_control=1.0, e_control=1.0, d_control=1.0, K_step=40):
+    src_mask = get_mask_from_lengths(src_len, max_src_len)
+    # Encoder
+    output = self.encoder(src_seq, style_vector, src_mask)
+
+    if self.language_emb is not None:
+      output = output + self.language_emb(language).unsqueeze(1).expand(
+        -1, max_src_len, -1
+      )
+
+    (
+      output,
+      p_predictions,
+      e_predictions,
+      log_d_predictions,
+      d_rounded,
+      mel_lens,
+      mel_masks,
+    ) = self.variance_adaptor(
+      output,
+      src_mask,
+      p_control=p_control,
+      e_control=e_control,
+      d_control=d_control,
+    )
+
+    output_diffusion=None
+    mels = None # only for inference
+    if self.model in ["aux", "shallow", "shallowstyle"]:
+      epsilon_predictions = noise_loss = diffusion_step = None
+      cond = output.clone()
+      # output, _ = self.decoder(output, style_vector, mel_masks)
+      output, mel_masks = self.decoder(output, style_vector, mel_masks)
+      # output = self.decoder(output, mel_masks)
+      output = self.mel_linear(output)
+      self.diffusion.aux_mel = output.clone()
+
+      if self.model in ["shallow", "shallowstyle"]:
+        (output_diffusion, epsilon_predictions, loss, diffusion_step,) = self.diffusion.forward1(mels, cond, style_vector, mel_masks, K_step)
+    return (
+      output_diffusion,
+      output_diffusion
+    )
