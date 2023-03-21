@@ -1,0 +1,108 @@
+chinese|groundtruth|100|三万五千五百六十二点儿一八|chinese_SSB0241_SSB02410019_0_mos.wav|chinese_SSB0241_SSB02410019_0_sim.wav
+chinese|groundtruth|100|三万五千五百六十二点儿一八|chinese_SSB0241_SSB02410478_1_mos.wav|chinese_SSB0241_SSB02410478_1_sim.wav
+chinese|groundtruth|100|三万五千五百六十二点儿一八|chinese_SSB0241_SSB02410256_2_mos.wav|chinese_SSB0241_SSB02410256_2_sim.wav
+chinese|groundtruth|100|三万五千五百六十二点儿一八|chinese_SSB0241_SSB02410190_3_mos.wav|chinese_SSB0241_SSB02410190_3_sim.wav
+chinese|groundtruth|100|三万五千五百六十二点儿一八|chinese_SSB0241_SSB02410141_4_mos.wav|chinese_SSB0241_SSB02410141_4_sim.wav
+chinese|groundtruth|100|三万五千五百六十二点儿一八|chinese_SSB0241_SSB02410287_5_mos.wav|chinese_SSB0241_SSB02410287_5_sim.wav
+chinese|groundtruth|100|戴尔的安全业务同比增长了三百分之八十|chinese_SSB0122_SSB01220122_0_mos.wav|chinese_SSB0122_SSB01220122_0_sim.wav
+chinese|groundtruth|100|戴尔的安全业务同比增长了三百分之八十|chinese_SSB0122_SSB01220235_1_mos.wav|chinese_SSB0122_SSB01220235_1_sim.wav
+chinese|groundtruth|100|戴尔的安全业务同比增长了三百分之八十|chinese_SSB0122_SSB01220006_2_mos.wav|chinese_SSB0122_SSB01220006_2_sim.wav
+chinese|groundtruth|100|戴尔的安全业务同比增长了三百分之八十|chinese_SSB0122_SSB01220467_3_mos.wav|chinese_SSB0122_SSB01220467_3_sim.wav
+chinese|groundtruth|100|戴尔的安全业务同比增长了三百分之八十|chinese_SSB0122_SSB01220298_4_mos.wav|chinese_SSB0122_SSB01220298_4_sim.wav
+chinese|groundtruth|100|戴尔的安全业务同比增长了三百分之八十|chinese_SSB0122_SSB01220249_5_mos.wav|chinese_SSB0122_SSB01220249_5_sim.wav
+chinese|groundtruth|100|还有备受关注的谷歌和苹果|chinese_SSB1956_SSB19560338_0_mos.wav|chinese_SSB1956_SSB19560338_0_sim.wav
+chinese|groundtruth|100|还有备受关注的谷歌和苹果|chinese_SSB1956_SSB19560177_1_mos.wav|chinese_SSB1956_SSB19560177_1_sim.wav
+chinese|groundtruth|100|还有备受关注的谷歌和苹果|chinese_SSB1956_SSB19560260_2_mos.wav|chinese_SSB1956_SSB19560260_2_sim.wav
+chinese|groundtruth|100|还有备受关注的谷歌和苹果|chinese_SSB1956_SSB19560082_3_mos.wav|chinese_SSB1956_SSB19560082_3_sim.wav
+chinese|groundtruth|100|还有备受关注的谷歌和苹果|chinese_SSB1956_SSB19560344_4_mos.wav|chinese_SSB1956_SSB19560344_4_sim.wav
+chinese|groundtruth|100|还有备受关注的谷歌和苹果|chinese_SSB1956_SSB19560395_5_mos.wav|chinese_SSB1956_SSB19560395_5_sim.wav
+indonesian|groundtruth|100|membanjirnya sapu plastik moceng hingga keset dari karet atau kain|indonesian_Ind001_Ind001_F_B_C_news_0072_0_mos.wav|indonesian_Ind001_Ind001_F_B_C_news_0072_0_sim.wav
+indonesian|groundtruth|100|warga yang ikut dalam konvoi bukannya terprovokasi|indonesian_Ind001_Ind001_F_B_C_news_0075_1_mos.wav|indonesian_Ind001_Ind001_F_B_C_news_0075_1_sim.wav
+indonesian|groundtruth|100|operasi terhadap nyoman akan segera dilakukan|indonesian_Ind001_Ind001_F_B_C_news_0009_2_mos.wav|indonesian_Ind001_Ind001_F_B_C_news_0009_2_sim.wav
+indonesian|groundtruth|100|kalau pemdaprov masih memandang perlu paskibra|indonesian_Ind001_Ind001_F_B_C_news_0007_3_mos.wav|indonesian_Ind001_Ind001_F_B_C_news_0007_3_sim.wav
+indonesian|groundtruth|100|elza syarief mengaku|indonesian_Ind001_Ind001_F_B_C_news_0000_4_mos.wav|indonesian_Ind001_Ind001_F_B_C_news_0000_4_sim.wav
+indonesian|groundtruth|100|itu risiko akhir|indonesian_Ind001_Ind001_F_B_C_news_0035_5_mos.wav|indonesian_Ind001_Ind001_F_B_C_news_0035_5_sim.wav
+indonesian|groundtruth|100|kalau klien sudah kepepet|indonesian_Ind003_Ind003_M_U_C_news_0126_0_mos.wav|indonesian_Ind003_Ind003_M_U_C_news_0126_0_sim.wav
+indonesian|groundtruth|100|ketahuan bawa ajinomoto dua pedagang bakso nyaris dikeroyok|indonesian_Ind003_Ind003_M_U_C_news_0079_1_mos.wav|indonesian_Ind003_Ind003_M_U_C_news_0079_1_sim.wav
+indonesian|groundtruth|100|tutur mbah jenggot|indonesian_Ind003_Ind003_M_U_C_news_0121_2_mos.wav|indonesian_Ind003_Ind003_M_U_C_news_0121_2_sim.wav
+indonesian|groundtruth|100|dan itu adalah china petroleum|indonesian_Ind003_Ind003_M_U_C_news_0077_3_mos.wav|indonesian_Ind003_Ind003_M_U_C_news_0077_3_sim.wav
+indonesian|groundtruth|100|kecuali roda empat terdapat pula konvoi kendaraan roda dua|indonesian_Ind003_Ind003_M_U_C_news_0153_4_mos.wav|indonesian_Ind003_Ind003_M_U_C_news_0153_4_sim.wav
+indonesian|groundtruth|100|urai kesowo|indonesian_Ind003_Ind003_M_U_C_news_0154_5_mos.wav|indonesian_Ind003_Ind003_M_U_C_news_0154_5_sim.wav
+indonesian|groundtruth|100|marzuki batasi kunjungan ke syahril|indonesian_Ind013_Ind013_M_U_C_news_0425_0_mos.wav|indonesian_Ind013_Ind013_M_U_C_news_0425_0_sim.wav
+indonesian|groundtruth|100|jumlah rute|indonesian_Ind013_Ind013_M_U_C_news_0488_1_mos.wav|indonesian_Ind013_Ind013_M_U_C_news_0488_1_sim.wav
+indonesian|groundtruth|100|air yang ada di sungai itu|indonesian_Ind013_Ind013_M_U_C_news_0459_2_mos.wav|indonesian_Ind013_Ind013_M_U_C_news_0459_2_sim.wav
+indonesian|groundtruth|100|tarmidzi hakim|indonesian_Ind013_Ind013_M_U_C_news_0501_3_mos.wav|indonesian_Ind013_Ind013_M_U_C_news_0501_3_sim.wav
+indonesian|groundtruth|100|sebelumnya harus dikonfirmasikan ke bulog dulu|indonesian_Ind013_Ind013_M_U_C_news_0422_4_mos.wav|indonesian_Ind013_Ind013_M_U_C_news_0422_4_sim.wav
+indonesian|groundtruth|100|italia kroasia portugal dan denmark juga lolos|indonesian_Ind013_Ind013_M_U_C_news_0481_5_mos.wav|indonesian_Ind013_Ind013_M_U_C_news_0481_5_sim.wav
+korean|groundtruth|100|마이너스 금리 예치제도 효과를 보완하기 위한 목적이다|korean_105_105_003_2603_0_mos.wav|korean_105_105_003_2603_0_sim.wav
+korean|groundtruth|100|마이너스 금리 예치제도 효과를 보완하기 위한 목적이다|korean_105_105_003_2853_1_mos.wav|korean_105_105_003_2853_1_sim.wav
+korean|groundtruth|100|마이너스 금리 예치제도 효과를 보완하기 위한 목적이다|korean_105_105_003_0668_2_mos.wav|korean_105_105_003_0668_2_sim.wav
+korean|groundtruth|100|마이너스 금리 예치제도 효과를 보완하기 위한 목적이다|korean_105_105_003_2955_3_mos.wav|korean_105_105_003_2955_3_sim.wav
+korean|groundtruth|100|마이너스 금리 예치제도 효과를 보완하기 위한 목적이다|korean_105_105_003_2831_4_mos.wav|korean_105_105_003_2831_4_sim.wav
+korean|groundtruth|100|마이너스 금리 예치제도 효과를 보완하기 위한 목적이다|korean_105_105_003_2046_5_mos.wav|korean_105_105_003_2046_5_sim.wav
+korean|groundtruth|100|인사를 결정하는 과정에서 당 지도부가 우 원내대표 및 원내지도부와 충분한 상의를 거치지 않은 채 일방적으로 인사를 했다는 불만도 원내지도부를 중심으로 흘러나왔다|korean_106_106_003_2135_0_mos.wav|korean_106_106_003_2135_0_sim.wav
+korean|groundtruth|100|인사를 결정하는 과정에서 당 지도부가 우 원내대표 및 원내지도부와 충분한 상의를 거치지 않은 채 일방적으로 인사를 했다는 불만도 원내지도부를 중심으로 흘러나왔다|korean_106_106_003_0325_1_mos.wav|korean_106_106_003_0325_1_sim.wav
+korean|groundtruth|100|인사를 결정하는 과정에서 당 지도부가 우 원내대표 및 원내지도부와 충분한 상의를 거치지 않은 채 일방적으로 인사를 했다는 불만도 원내지도부를 중심으로 흘러나왔다|korean_106_106_003_2225_2_mos.wav|korean_106_106_003_2225_2_sim.wav
+korean|groundtruth|100|인사를 결정하는 과정에서 당 지도부가 우 원내대표 및 원내지도부와 충분한 상의를 거치지 않은 채 일방적으로 인사를 했다는 불만도 원내지도부를 중심으로 흘러나왔다|korean_106_106_003_0098_3_mos.wav|korean_106_106_003_0098_3_sim.wav
+korean|groundtruth|100|인사를 결정하는 과정에서 당 지도부가 우 원내대표 및 원내지도부와 충분한 상의를 거치지 않은 채 일방적으로 인사를 했다는 불만도 원내지도부를 중심으로 흘러나왔다|korean_106_106_003_1305_4_mos.wav|korean_106_106_003_1305_4_sim.wav
+korean|groundtruth|100|인사를 결정하는 과정에서 당 지도부가 우 원내대표 및 원내지도부와 충분한 상의를 거치지 않은 채 일방적으로 인사를 했다는 불만도 원내지도부를 중심으로 흘러나왔다|korean_106_106_003_2058_5_mos.wav|korean_106_106_003_2058_5_sim.wav
+korean|groundtruth|100|최태민씨는 비리를 저지르고 박 대표를 이용했다는 말이 있던데요|korean_110_110_003_2566_0_mos.wav|korean_110_110_003_2566_0_sim.wav
+korean|groundtruth|100|최태민씨는 비리를 저지르고 박 대표를 이용했다는 말이 있던데요|korean_110_110_003_1221_1_mos.wav|korean_110_110_003_1221_1_sim.wav
+korean|groundtruth|100|최태민씨는 비리를 저지르고 박 대표를 이용했다는 말이 있던데요|korean_110_110_003_0814_2_mos.wav|korean_110_110_003_0814_2_sim.wav
+korean|groundtruth|100|최태민씨는 비리를 저지르고 박 대표를 이용했다는 말이 있던데요|korean_110_110_003_1253_3_mos.wav|korean_110_110_003_1253_3_sim.wav
+korean|groundtruth|100|최태민씨는 비리를 저지르고 박 대표를 이용했다는 말이 있던데요|korean_110_110_003_1986_4_mos.wav|korean_110_110_003_1986_4_sim.wav
+korean|groundtruth|100|최태민씨는 비리를 저지르고 박 대표를 이용했다는 말이 있던데요|korean_110_110_003_2603_5_mos.wav|korean_110_110_003_2603_5_sim.wav
+vietnamese|groundtruth|100|hội thảo rất ý nghĩa này , chỉ là một trong số nhiều hoạt động hội nữ doanh nhân tỉnh thái nguyên tổ chức .|vietnamese_0012_hjeu_0012_hjeu_hjeu-120-0007_0_mos.wav|vietnamese_0012_hjeu_0012_hjeu_hjeu-120-0007_0_sim.wav
+vietnamese|groundtruth|100|đặc biệt là chương trình quà tặng khuyến mại với tổng giá trị hơn hai mươi tỷ đồng ,|vietnamese_0012_hjeu_0012_hjeu_hjeu-131-0001_1_mos.wav|vietnamese_0012_hjeu_0012_hjeu_hjeu-131-0001_1_sim.wav
+vietnamese|groundtruth|100|chỉ đạo sắp xếp kiện toàn mô hình tổ chức đảng trong các công ty cổ phần , doanh nghiệp , đơn vị sự nghiệp công lập .|vietnamese_0012_hjeu_0012_hjeu_hjeu-138-0023_2_mos.wav|vietnamese_0012_hjeu_0012_hjeu_hjeu-138-0023_2_sim.wav
+vietnamese|groundtruth|100|cần có giải pháp quyết liệt và đột phá hơn nữa trong thời gian tới , để khắc phục những tồn tại hạn chế , giúp các nhà đầu tư ngày càng tin tưởng vào quyết định đầu tư kinh doanh của mình ,|vietnamese_0012_hjeu_0012_hjeu_hjeu-13-0015_3_mos.wav|vietnamese_0012_hjeu_0012_hjeu_hjeu-13-0015_3_sim.wav
+vietnamese|groundtruth|100|kết quả của mối quan hệ vụng trộm này .|vietnamese_0012_hjeu_0012_hjeu_hjeu-141-0010_4_mos.wav|vietnamese_0012_hjeu_0012_hjeu_hjeu-141-0010_4_sim.wav
+vietnamese|groundtruth|100|nhằm thực hiện tốt việc định hướng nội dung ,|vietnamese_0012_hjeu_0012_hjeu_hjeu-107-0011_5_mos.wav|vietnamese_0012_hjeu_0012_hjeu_hjeu-107-0011_5_sim.wav
+vietnamese|groundtruth|100|sẽ xoá đi những hận thù ,|vietnamese_0015_lien_0015_lien_lien-119-0016_0_mos.wav|vietnamese_0015_lien_0015_lien_lien-119-0016_0_sim.wav
+vietnamese|groundtruth|100|chặt cây cối hoa màu ,|vietnamese_0015_lien_0015_lien_lien-110-0034_1_mos.wav|vietnamese_0015_lien_0015_lien_lien-110-0034_1_sim.wav
+vietnamese|groundtruth|100|và giảm thiểu tắc nghẽn giao thông .|vietnamese_0015_lien_0015_lien_lien-120-0006_2_mos.wav|vietnamese_0015_lien_0015_lien_lien-120-0006_2_sim.wav
+vietnamese|groundtruth|100|đặc biệt là dịp tết nguyên đán ,|vietnamese_0015_lien_0015_lien_lien-116-0016_3_mos.wav|vietnamese_0015_lien_0015_lien_lien-116-0016_3_sim.wav
+vietnamese|groundtruth|100|đồng chí nguyễn văn bình trưởng ban kinh tế trung ương ,|vietnamese_0015_lien_0015_lien_lien-137-0022_4_mos.wav|vietnamese_0015_lien_0015_lien_lien-137-0022_4_sim.wav
+vietnamese|groundtruth|100|thay mặt đoàn đại biểu quốc hội tỉnh ,|vietnamese_0015_lien_0015_lien_lien-107-0010_5_mos.wav|vietnamese_0015_lien_0015_lien_lien-107-0010_5_sim.wav
+vietnamese|groundtruth|100|mà chính phủ mỹ công nhận là do chất đi ô xin gây ra|vietnamese_0013_aihoa_0013_aihoa_f112aa_AiHoa_0028_0060_0_mos.wav|vietnamese_0013_aihoa_0013_aihoa_f112aa_AiHoa_0028_0060_0_sim.wav
+vietnamese|groundtruth|100|đây là một trong ba ngôi nhà bán trú đầu tiên ở kỳ sơn|vietnamese_0013_aihoa_0013_aihoa_f112aa_AiHoa_0024_0100_1_mos.wav|vietnamese_0013_aihoa_0013_aihoa_f112aa_AiHoa_0024_0100_1_sim.wav
+vietnamese|groundtruth|100|ba mươi bảy mẫu sữa bột có lượng đạm dưới mức công bố|vietnamese_0013_aihoa_0013_aihoa_f112aa_AiHoa_0010_0003_2_mos.wav|vietnamese_0013_aihoa_0013_aihoa_f112aa_AiHoa_0010_0003_2_sim.wav
+vietnamese|groundtruth|100|tuy nhiên|vietnamese_0013_aihoa_0013_aihoa_f112aa_AiHoa_0020_0031_3_mos.wav|vietnamese_0013_aihoa_0013_aihoa_f112aa_AiHoa_0020_0031_3_sim.wav
+vietnamese|groundtruth|100|cuộc đua vào ngõ cụt|vietnamese_0013_aihoa_0013_aihoa_f112aa_AiHoa_0031_0037_4_mos.wav|vietnamese_0013_aihoa_0013_aihoa_f112aa_AiHoa_0031_0037_4_sim.wav
+vietnamese|groundtruth|100|chúng tôi phải vừa làm thầy , vừa làm thợ|vietnamese_0013_aihoa_0013_aihoa_f112aa_AiHoa_0024_0089_5_mos.wav|vietnamese_0013_aihoa_0013_aihoa_f112aa_AiHoa_0024_0089_5_sim.wav
+english|groundtruth|100|and she was also very fond of all the animals, and learned to know them well, and even to understand their language, which very few people can do.|english_100_100_121674_000004_000001_0_mos.wav|english_100_100_121674_000004_000001_0_sim.wav
+english|groundtruth|100|i first got an idea of its calibre when i heard him preach in his own church at morton.|english_100_100_122655_000014_000001_1_mos.wav|english_100_100_122655_000014_000001_1_sim.wav
+english|groundtruth|100|we can yet live," said diana at last.|english_100_100_122655_000067_000001_2_mos.wav|english_100_100_122655_000067_000001_2_sim.wav
+english|groundtruth|100|tell me, you rascal, where is the pig?"|english_100_100_121669_000038_000001_3_mos.wav|english_100_100_121669_000038_000001_3_sim.wav
+english|groundtruth|100|diana then turned to me.|english_100_100_122655_000071_000001_4_mos.wav|english_100_100_122655_000071_000001_4_sim.wav
+english|groundtruth|100|"i will go to my house to morrow, and open the school, if you like, next week."|english_100_100_122655_000042_000000_5_mos.wav|english_100_100_122655_000042_000000_5_sim.wav
+english|groundtruth|100|they stopped in front of otto's cell; he heard the jingle of keys, and then a loud rattle of one thrust into the lock of the heavy oaken door.|english_1028_1028_133395_000004_000001_0_mos.wav|english_1028_1028_133395_000004_000001_0_sim.wav
+english|groundtruth|100|"so!" said she.|english_1028_1028_133395_000037_000000_1_mos.wav|english_1028_1028_133395_000037_000000_1_sim.wav
+english|groundtruth|100|"why dost thou cry, otto?" said she, after a while.|english_1028_1028_133395_000052_000000_2_mos.wav|english_1028_1028_133395_000052_000000_2_sim.wav
+english|groundtruth|100|"yes," said otto, very seriously, "i will promise."|english_1028_1028_133395_000059_000000_3_mos.wav|english_1028_1028_133395_000059_000000_3_sim.wav
+english|groundtruth|100|but what of that, otto?|english_1028_1028_133393_000041_000001_4_mos.wav|english_1028_1028_133393_000041_000001_4_sim.wav
+english|groundtruth|100|suddenly ursela broke the silence.|english_1028_1028_133393_000032_000001_5_mos.wav|english_1028_1028_133393_000032_000001_5_sim.wav
+english|groundtruth|100|the latter walked on; the former came in.|english_1066_1066_5330_000058_000001_0_mos.wav|english_1066_1066_5330_000058_000001_0_sim.wav
+english|groundtruth|100|"trouble!|english_1066_1066_4479_000011_000000_1_mos.wav|english_1066_1066_4479_000011_000000_1_sim.wav
+english|groundtruth|100|"i don't know who.|english_1066_1066_5330_000034_000000_2_mos.wav|english_1066_1066_5330_000034_000000_2_sim.wav
+english|groundtruth|100|in spite of his smock frock and his straw wisped hat, and his false whiskers, black as erebus, she knew him for her brother.|english_1066_1066_5330_000006_000002_3_mos.wav|english_1066_1066_5330_000006_000002_3_sim.wav
+english|groundtruth|100|"in london!" interrupted barbara.|english_1066_1066_5330_000013_000000_4_mos.wav|english_1066_1066_5330_000013_000000_4_sim.wav
+english|groundtruth|100|as to her illness, all nothing of course.|english_1066_1066_4479_000028_000002_5_mos.wav|english_1066_1066_4479_000028_000002_5_sim.wav
+japanese|groundtruth|100|剣歯虎が絶滅したのは、氷河時代であった。|japanese_jvs004_jvs004_BASIC5000_1170_0_mos.wav|japanese_jvs004_jvs004_BASIC5000_1170_0_sim.wav
+japanese|groundtruth|100|痛みは、点滴より鎮痛薬を、静脈投与することで、鎮痛を行う。|japanese_jvs004_jvs004_VOICEACTRESS100_021_1_mos.wav|japanese_jvs004_jvs004_VOICEACTRESS100_021_1_sim.wav
+japanese|groundtruth|100|現在、ニュージャージー州、ムーアズタウンに住んでいる。|japanese_jvs004_jvs004_VOICEACTRESS100_026_2_mos.wav|japanese_jvs004_jvs004_VOICEACTRESS100_026_2_sim.wav
+japanese|groundtruth|100|むろん、この両極端の間に、多くのバリエーションがある。|japanese_jvs004_jvs004_BASIC5000_1105_3_mos.wav|japanese_jvs004_jvs004_BASIC5000_1105_3_sim.wav
+japanese|groundtruth|100|この町では、公共の交通機関の料金は、全て1ドルです。|japanese_jvs004_jvs004_TRAVEL1000_0840_4_mos.wav|japanese_jvs004_jvs004_TRAVEL1000_0840_4_sim.wav
+japanese|groundtruth|100|よもやとは思うが、こっちでは微妙かもしれないよ。|japanese_jvs004_jvs004_UT-PARAPHRASE-sent294-phrase1_5_mos.wav|japanese_jvs004_jvs004_UT-PARAPHRASE-sent294-phrase1_5_sim.wav
+japanese|groundtruth|100|シャンチーの専業プロは、チームから支払われる給料と、対局費を、主な収入としている。|japanese_jvs007_jvs007_VOICEACTRESS100_008_0_mos.wav|japanese_jvs007_jvs007_VOICEACTRESS100_008_0_sim.wav
+japanese|groundtruth|100|特に新たな材料はない。|japanese_jvs007_jvs007_UT-PARAPHRASE-sent159-phrase2_1_mos.wav|japanese_jvs007_jvs007_UT-PARAPHRASE-sent159-phrase2_1_sim.wav
+japanese|groundtruth|100|レジェンドシリーズをベースに、ヨーフリー機構を備えた、ビューカメラ。|japanese_jvs007_jvs007_VOICEACTRESS100_074_2_mos.wav|japanese_jvs007_jvs007_VOICEACTRESS100_074_2_sim.wav
+japanese|groundtruth|100|上院議員として、バーンウェルは、カリフォルニア州の、連邦加入に賛成した。|japanese_jvs007_jvs007_VOICEACTRESS100_073_3_mos.wav|japanese_jvs007_jvs007_VOICEACTRESS100_073_3_sim.wav
+japanese|groundtruth|100|また、東寺のように、五大明王と呼ばれる、主要な明王の中央に配されることも多い。|japanese_jvs007_jvs007_VOICEACTRESS100_001_4_mos.wav|japanese_jvs007_jvs007_VOICEACTRESS100_001_4_sim.wav
+japanese|groundtruth|100|ファミリーレストランは、家族や友人と気楽に行ける所です。|japanese_jvs007_jvs007_TRAVEL1000_0502_5_mos.wav|japanese_jvs007_jvs007_TRAVEL1000_0502_5_sim.wav
+japanese|groundtruth|100|スマートフォンから、フィーチャーフォンまで、マルチデバイスに対応。|japanese_jvs012_jvs012_VOICEACTRESS100_010_0_mos.wav|japanese_jvs012_jvs012_VOICEACTRESS100_010_0_sim.wav
+japanese|groundtruth|100|どうにか階段をのぼりきった彼女は、疲れた体に鞭打って、長い廊下をヨタヨタと歩き続けた。|japanese_jvs012_jvs012_ONOMATOPEE300_244_1_mos.wav|japanese_jvs012_jvs012_ONOMATOPEE300_244_1_sim.wav
+japanese|groundtruth|100|ただし、ギャンブル依存症の入院治療を行っている病院は、わずかである。|japanese_jvs012_jvs012_VOICEACTRESS100_017_2_mos.wav|japanese_jvs012_jvs012_VOICEACTRESS100_017_2_sim.wav
+japanese|groundtruth|100|レギュラーメンバーの顔写真をクリックした後に、ムービープレイヤー風に再生されるという、特異な形式となっている。|japanese_jvs012_jvs012_VOICEACTRESS100_065_3_mos.wav|japanese_jvs012_jvs012_VOICEACTRESS100_065_3_sim.wav
+japanese|groundtruth|100|ベルガートーア前の、ヴェディゲンウーファーパークには、戦争と弾圧の犠牲者のための記念碑が建っている。|japanese_jvs012_jvs012_VOICEACTRESS100_019_4_mos.wav|japanese_jvs012_jvs012_VOICEACTRESS100_019_4_sim.wav
+japanese|groundtruth|100|グレッグは、ミシシッピ州、アバディーンにある、オッドフェローズ墓地に埋葬されることになった。|japanese_jvs012_jvs012_VOICEACTRESS100_062_5_mos.wav|japanese_jvs012_jvs012_VOICEACTRESS100_062_5_sim.wav

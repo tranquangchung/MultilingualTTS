@@ -10,9 +10,17 @@ from tqdm import tqdm
 
 from utils.model import get_vocoder, get_param_num, get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion
 from utils.model import get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion_Style
+from utils.model import get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion_Style_KeepFS
+from utils.model import get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion_Style_KeepFS1
+from utils.model import get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion_Style_Language
 from utils.tools import to_device, log_diffusion, log, synth_one_sample, synth_one_sample_multilingual_diffusion
 from model import FastSpeech2Loss_MultiLingual_Diffusion
 from dataset_multi import Dataset
+from scipy.io.wavfile import write
+from utils.model import vocoder_infer
+
+# from TN_dataset.dataset_multi_balance import Dataset
+# from TN_dataset.dataset_multi_balance_language import Dataset
 
 from evaluate import evaluate, evaluate_multilingual_diffusion
 import torch
@@ -32,25 +40,29 @@ def main(args, configs):
         "train.txt", preprocess_config, train_config, sort=True, drop_last=True
     )
     batch_size = train_config["optimizer"]["batch_size"]
-    group_size = 4  # Set this larger than 1 to enable sorting in Dataset
+    group_size = 1  # Set this larger than 1 to enable sorting in Dataset
     assert batch_size * group_size < len(dataset)
     loader = DataLoader(
         dataset,
         batch_size=batch_size * group_size,
         shuffle=True,
-        num_workers=48,
+        num_workers=15,
         collate_fn=dataset.collate_fn,
     )
 
     # Prepare model
     # model, optimizer = get_model(args, configs, device, train=True)
     # model, optimizer = get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion(args, configs, device, train=True)
-    model, optimizer = get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion_Style(args, configs, device, train=True)
+    # model, optimizer = get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion_Style(args, configs, device, train=True)
+    model, optimizer = get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion_Style_KeepFS(args, configs, device, train=True)
+    # model, optimizer = get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion_Style_Language(args, configs, device, train=True)
     # print(model)
+    pytorch_total_params = sum(p.numel() for p in model.parameters())
+    pytorch_total_params_trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print("pytorch_total_params", pytorch_total_params)
+    print("pytorch_total_params_trainable", pytorch_total_params_trainable)
     model = nn.DataParallel(model)
-    num_param = get_param_num(model)
     Loss = FastSpeech2Loss_MultiLingual_Diffusion(preprocess_config, model_config).to(device)
-    print("Number of FastSpeech2 Parameters:", num_param)
 
     # Load vocoder
     vocoder = get_vocoder(configs, device)

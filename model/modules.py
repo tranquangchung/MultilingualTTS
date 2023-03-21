@@ -325,6 +325,7 @@ class MelStyleEncoder(nn.Module):
                                 self.hidden_dim//self.n_head, self.hidden_dim//self.n_head, self.dropout) 
 
         self.fc = LinearNorm(self.hidden_dim, self.out_dim)
+        self.activation = nn.Tanh()
 
     def temporal_avg_pool(self, x, mask=None):
         if mask is None:
@@ -337,7 +338,6 @@ class MelStyleEncoder(nn.Module):
         return out
 
     def forward(self, x, mask=None):
-        import pdb
         max_len = x.shape[1]
         slf_attn_mask = mask.unsqueeze(1).expand(-1, max_len, -1) if mask is not None else None
         # spectral

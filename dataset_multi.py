@@ -7,6 +7,7 @@ from torch.utils.data import Dataset
 
 from text import text_to_sequence
 from utils.tools import pad_1D, pad_2D
+import pdb
 
 class Dataset(Dataset):
     def __init__(
@@ -168,13 +169,14 @@ if __name__ == "__main__":
     from utils.tools import to_device
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    path = "LibriTTS_StyleSpeech_multilingual"
+    # path = "LibriTTS_StyleSpeech_multilingual"
     # path = "VNTTS"
+    path = "LibriTTS_StyleSpeech_multilingual_diffusion_style_EN"
     preprocess_config = yaml.load(
-        open("./config/{0}/preprocess.yaml".format(path), "r"), Loader=yaml.FullLoader
+        open("./config/config_kaga/{0}/preprocess.yaml".format(path), "r"), Loader=yaml.FullLoader
     )
     train_config = yaml.load(
-        open("./config/{0}/train.yaml".format(path), "r"), Loader=yaml.FullLoader
+        open("./config/config_kaga/{0}/train.yaml".format(path), "r"), Loader=yaml.FullLoader
     )
 
     train_dataset = Dataset(
@@ -215,16 +217,16 @@ if __name__ == "__main__":
         )
     )
 
-    n_batch = 0
-    for batchs in val_loader:
-        for batch in batchs:
-            # print(batch)
-            # if batch[4].shape != batch[10].shape:
-            #     print("phone-pitch: ", batch[4].shape, batch[10].shape)
-            to_device(batch, device)
-            n_batch += 1
-    print(
-        "Validation set  with size {} is composed of {} batches.".format(
-            len(val_dataset), n_batch
-        )
-    )
+    # n_batch = 0
+    # for batchs in val_loader:
+    #     for batch in batchs:
+    #         # print(batch)
+    #         # if batch[4].shape != batch[10].shape:
+    #         #     print("phone-pitch: ", batch[4].shape, batch[10].shape)
+    #         to_device(batch, device)
+    #         n_batch += 1
+    # print(
+    #     "Validation set  with size {} is composed of {} batches.".format(
+    #         len(val_dataset), n_batch
+    #     )
+    # )

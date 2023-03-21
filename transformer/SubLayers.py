@@ -3,7 +3,8 @@ import torch.nn.functional as F
 import numpy as np
 
 from .Modules import ScaledDotProductAttention
-
+import pdb
+import torch
 
 class MultiHeadAttention(nn.Module):
     """ Multi-Head Attention module """
@@ -92,6 +93,12 @@ class PositionwiseFeedForward(nn.Module):
 
         return output
 
+class Mish(nn.Module):
+    def __init__(self):
+        super(Mish, self).__init__()
+    def forward(self, x):
+        return x * torch.tanh(F.softplus(x))
+
 class StyleAdaptiveLayerNorm(nn.Module):
     def __init__(self, in_channel, style_dim):
         super(StyleAdaptiveLayerNorm, self).__init__()
@@ -119,3 +126,25 @@ class AffineLinear(nn.Module):
 
     def forward(self, input):
         return self.affine(input)
+
+
+class StyleAdaptiveLayerNorm_StyleLanguage(nn.Module):
+    def __init__(self, in_channel, lang_dim):
+        super(StyleAdaptiveLayerNorm_StyleLanguage, self).__init__()
+        self.in_channel = in_channel
+        self.norm = nn.LayerNorm(in_channel, elementwise_affine=False)
+
+        self.lang = AffineLinear(lang_dim, in_channel*2)
+        self.lang.affine.bias.data[:in_channel] = 1
+        self.lang.affine.bias.data[in_channel:] = 0
+        self.norm_tanh = nn.Tanh()
+
+    def forward(self, input, lang_code):
+        # lang
+        lang = self.lang(lang_code).unsqueeze(1)
+        gamma, beta = lang.chunk(2, dim=-1)
+
+        out = self.norm(input)
+        out = gamma * out + beta
+        out = self.norm_tanh(out)
+        return out

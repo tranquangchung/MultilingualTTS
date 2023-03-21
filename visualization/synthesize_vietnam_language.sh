@@ -1,0 +1,1 @@
+python synthesize_vietnam_language.py

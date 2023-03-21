@@ -455,7 +455,7 @@ class GaussianDiffusionShallow(nn.Module):
         return output, epsilon, loss, t
 
     @torch.no_grad()
-    def sampling1(self, K_step=100):
+    def sampling1(self, K_step=100, verbose=False):
         b, *_, device = *self.cond.shape, self.cond.device
         # t = self.K_step
         t = K_step
@@ -463,7 +463,11 @@ class GaussianDiffusionShallow(nn.Module):
         fs2_mels = fs2_mels.transpose(1, 2)[:, None, :, :]
 
         x = self.q_sample(x_start=fs2_mels, t=torch.tensor([t - 1], device=device).long())
-        for i in tqdm(reversed(range(0, t)), desc="sample time step", total=t):
+        if verbose:
+          for i in tqdm(reversed(range(0, t)), desc="sample time step", total=t):
+            x = self.p_sample(x, torch.full((b,), i, device=device, dtype=torch.long), self.cond)
+        else:
+          for i in reversed(range(0, t)):
             x = self.p_sample(x, torch.full((b,), i, device=device, dtype=torch.long), self.cond)
         x = x[:, 0].transpose(1, 2)
         output = self.denorm_spec(x)
@@ -700,7 +704,7 @@ class GaussianDiffusionShallowStyle(nn.Module):
     return x
 
   @torch.no_grad()
-  def sampling1(self, style, K_step=100):
+  def sampling1(self, style, K_step=100, verbose=False):
     b, *_, device = *self.cond.shape, self.cond.device
     # t = self.K_step
     t = K_step
@@ -708,8 +712,12 @@ class GaussianDiffusionShallowStyle(nn.Module):
     fs2_mels = fs2_mels.transpose(1, 2)[:, None, :, :]
 
     x = self.q_sample(x_start=fs2_mels, t=torch.tensor([t - 1], device=device).long())
-    for i in tqdm(reversed(range(0, t)), desc="sample time step", total=t):
-      x = self.p_sample(x, torch.full((b,), i, device=device, dtype=torch.long), self.cond, style)
+    if verbose:
+      for i in tqdm(reversed(range(0, t)), desc="sample time step", total=t):
+        x = self.p_sample(x, torch.full((b,), i, device=device, dtype=torch.long), self.cond, style)
+    else:
+      for i in reversed(range(0, t)):
+        x = self.p_sample(x, torch.full((b,), i, device=device, dtype=torch.long), self.cond, style)
     x = x[:, 0].transpose(1, 2)
     output = self.denorm_spec(x)
 

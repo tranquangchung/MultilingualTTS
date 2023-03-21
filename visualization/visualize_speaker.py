@@ -7,6 +7,8 @@ import torch
 import yaml
 import numpy as np
 from utils.model import get_vocoder, get_model_fastSpeech2_StyleEncoder_MultiLanguage_1
+from utils.model import get_vocoder, get_model_fastSpeech2_StyleEncoder_MultiLanguage_1
+from utils.model import get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion_Style1
 import audio as Audio
 import librosa
 import glob
@@ -84,107 +86,154 @@ def style_vector(model, configs, audio_path):
     style_vector = model.get_style_vector(ref_mel)
     return style_vector.cpu().detach().numpy().squeeze()
 
+def get_model():
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+    "--source",
+    type=str,
+    default=None,
+    help="path to a source file with format like train.txt and val.txt, for batch mode only",
+  )
+  parser.add_argument(
+    "--text",
+    type=str,
+    default=None,
+    help="raw text to synthesize, for single-sentence mode only",
+  )
+  parser.add_argument(
+    "--name",
+    type=str,
+    default=None,
+    help="name to save",
+  )
+  parser.add_argument(
+    "--language",
+    type=str,
+    default=None,
+    help="language to synthesis",
+  )
+  parser.add_argument(
+    "--speaker_id",
+    type=int,
+    default=0,
+    help="speaker ID for multi-speaker synthesis, for single-sentence mode only",
+  )
+  parser.add_argument(
+    "--pitch_control",
+    type=float,
+    default=1.0,
+    help="control the pitch of the whole utterance, larger value for higher pitch",
+  )
+  parser.add_argument(
+    "--energy_control",
+    type=float,
+    default=1.0,
+    help="control the energy of the whole utterance, larger value for larger volume",
+  )
+  parser.add_argument(
+    "--duration_control",
+    type=float,
+    default=1.25,
+    help="control the speed of the whole utterance, larger value for slower speaking rate",
+  )
+  parser.add_argument(
+    "--model",
+    type=str,
+    choices=["naive", "aux", "shallow"],
+    required=False,
+    default="shallow",
+    help="training model type",
+  )
+  args = parser.parse_args()
+
+  ###########################################################################
+  args.restore_step = "10000_FS23500"
+  args.preprocess_config = "../config/config_pcgpu/LibriTTS_StyleSpeech_multilingual/preprocess.yaml"
+  args.model_config = "../config/config_pcgpu/LibriTTS_StyleSpeech_multilingual/model.yaml"
+  args.train_config = "../config/config_pcgpu/LibriTTS_StyleSpeech_multilingual/train.yaml"
+  preprocess_config = yaml.load(
+    open(args.preprocess_config, "r"), Loader=yaml.FullLoader
+  )
+  model_config = yaml.load(open(args.model_config, "r"), Loader=yaml.FullLoader)
+  train_config = yaml.load(open(args.train_config, "r"), Loader=yaml.FullLoader)
+  configs = (preprocess_config, model_config, train_config)
+  model = get_model_fastSpeech2_StyleEncoder_MultiLanguage_1(args, configs, device, train=False)
+  model_name = "baseline_fastspeech2"
+  yield [model, model_name, configs, args]
+
+  # # # ###########################################################################
+  # args.restore_step = 220000
+  # args.preprocess_config = "../config/config_pcgpu/LibriTTS_StyleSpeech_multilingual_diffusion_style_VN/preprocess.yaml"
+  # args.model_config = "../config/config_pcgpu/LibriTTS_StyleSpeech_multilingual_diffusion_style_VN/model.yaml"
+  # args.train_config = "../config/config_pcgpu/LibriTTS_StyleSpeech_multilingual_diffusion_style_VN/train.yaml"
+  # preprocess_config = yaml.load(
+  #     open(args.preprocess_config, "r"), Loader=yaml.FullLoader
+  # )
+  # model_config = yaml.load(open(args.model_config, "r"), Loader=yaml.FullLoader)
+  # train_config = yaml.load(open(args.train_config, "r"), Loader=yaml.FullLoader)
+  # configs = (preprocess_config, model_config, train_config)
+  # model = get_model_fastSpeech2_StyleEncoder_MultiLanguage_Difffusion_Style1(args, configs, device, train=False)
+  # model_name = "vietname_model"
+  # yield [model, model_name, configs, args]
 
 if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--restore_step", type=int, required=True)
-    parser.add_argument(
-        "--name",
-        type=str,
-        default=None,
-        help="name to save",
-    )
-    parser.add_argument(
-        "-p",
-        "--preprocess_config",
-        type=str,
-        required=True,
-        help="path to preprocess.yaml",
-    )
-    parser.add_argument(
-        "-m", "--model_config", type=str, required=True, help="path to model.yaml"
-    )
-    parser.add_argument(
-        "-t", "--train_config", type=str, required=True, help="path to train.yaml"
-    )
-
-    args = parser.parse_args()
-    print(args)
-
-    # Read Config
-    preprocess_config = yaml.load(
-        open(args.preprocess_config, "r"), Loader=yaml.FullLoader
-    )
-    model_config = yaml.load(open(args.model_config, "r"), Loader=yaml.FullLoader)
-    train_config = yaml.load(open(args.train_config, "r"), Loader=yaml.FullLoader)
-    configs = (preprocess_config, model_config, train_config)
-
-    # Get model
-    # model = get_model(args, configs, device, train=False)
-    model = get_model_fastSpeech2_StyleEncoder_MultiLanguage_1(args, configs, device, train=False)
-    pytorch_total_params = sum(p.numel() for p in model.parameters())
-    pytorch_total_params_trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print("pytorch_total_params", pytorch_total_params)
-    print("pytorch_total_params_trainable", pytorch_total_params_trainable)
     # Load vocoder
     path_folder = "/home/ldap-users/s2220411/Code/FastSpeech2_multilingual/visualization/synthesis_audio"
     speaker_m = ["0000_ducnguyentrung", "0001_dungnguyentuan", "0002_nguyenthanhhai", "0005_thanhletien", "0012_hjeu"]
     speaker_f = ["0014_hongnhung", "0015_lien", "0016_minhnguyet", "0035_lethithuygiang", "0036_nguyenminhtrang"]
+
     labels = []
     embeddings = []
     colors_tsne = []
     markers_tsne = []
     colors_edge = []
     index_total = 0
-    for index, speaker in enumerate(speaker_m):
-        color_tmp = colors[index_total % len(colors)]
-        wavs = glob.glob(os.path.join(path_folder, speaker, "*.wav"))
-        index_total += 1
-        for wav in wavs:
-            print(wav)
-            colors_edge.append("gold")
-            colors_tsne.append(color_tmp)
-            if "_synthesis.wav" in wav:
-                markers_tsne.append("o")
-            else:
-                markers_tsne.append("s")
-            labels.append(index_total)
-            # embedding = style_vector(model, configs, wav)
-            # embeddings.append(embedding)
-    ##############################################################################
-    for index, speaker in enumerate(speaker_f):
-        color_tmp = colors[index_total % len(colors)]
-        wavs = glob.glob(os.path.join(path_folder, speaker, "*.wav"))
-        index_total += 1
-        for wav in wavs:
-            print(wav)
-            colors_edge.append("violet")
-            colors_tsne.append(color_tmp)
-            if "_synthesis.wav" in wav:
-                markers_tsne.append("o")
-            else:
-                markers_tsne.append("s")
-            labels.append(index_total)
-            # embedding = style_vector(model, configs, wav)
-            # embeddings.append(embedding)
+    for [model, model_name, configs, args] in get_model():
+        for index, speaker in enumerate(speaker_m):
+            color_tmp = colors[index_total % len(colors)]
+            wavs = glob.glob(os.path.join(path_folder, speaker, "*.wav"))
+            index_total += 1
+            for wav in wavs:
+                print(wav)
+                colors_edge.append("gold")
+                colors_tsne.append(color_tmp)
+                if "_synthesis.wav" in wav:
+                    markers_tsne.append("o")
+                else:
+                    markers_tsne.append("s")
+                labels.append(index_total)
+                embedding = style_vector(model, configs, wav)
+                embeddings.append(embedding)
+        ##############################################################################
+        for index, speaker in enumerate(speaker_f):
+            color_tmp = colors[index_total % len(colors)]
+            wavs = glob.glob(os.path.join(path_folder, speaker, "*.wav"))
+            index_total += 1
+            for wav in wavs:
+                print(wav)
+                colors_edge.append("violet")
+                colors_tsne.append(color_tmp)
+                if "_synthesis.wav" in wav:
+                    markers_tsne.append("o")
+                else:
+                    markers_tsne.append("s")
+                labels.append(index_total)
+                embedding = style_vector(model, configs, wav)
+                embeddings.append(embedding)
 
-    # embeddings = np.asarray(embeddings)
-    # with open('embeddings.npy', 'wb') as file_np:
-    #     np.save(file_np, embeddings)
-    # with open('labels.npy', 'wb') as file_np:
-    #     np.save(file_np, labels)
-    with open('embeddings.npy', 'rb') as file_np:
-        embeddings = np.load(file_np)
-    # with open('labels.npy', 'rb') as file_np:
-    #     labels = np.load(file_np)
-    print("Calculating for TSNE")
-    n_iter = 5000
-    print("Speaker: {0}, n_iter: {1}".format(len(labels), n_iter))
-    print(markers_tsne)
-    print(colors_tsne)
-    data_tsne = Calculate_TSNE(embeddings, n_iter=n_iter)
-    Visualization(data_tsne, args.name+"_TSNE", colors_tsne=colors_tsne, markers_tsne=markers_tsne, colors_edge=colors_edge)
-    data_pca = Calculate_PCA(embeddings)
-    Visualization(data_pca, args.name+"_PCA", colors_tsne=colors_tsne, markers_tsne=markers_tsne, colors_edge=colors_edge)
-    print("DONE")
+        embeddings = np.asarray(embeddings)
+        with open(f'./embeddings/{model_name}_embeddings.npy', 'wb') as file_np:
+            np.save(file_np, embeddings)
+        with open(f'./embeddings/{model_name}_labels.npy', 'wb') as file_np:
+            np.save(file_np, labels)
+        # with open(f'./embeddings/{model_name}_embeddings.npy', 'rb') as file_np:
+        #     embeddings = np.load(file_np)
+        # with open(f'./embeddings/{model_name}_labels.npy', 'rb') as file_np:
+        #     labels = np.load(file_np)
+        print("Calculating for TSNE")
+        n_iter = 2000
+        print("Speaker: {0}, n_iter: {1}".format(len(labels), n_iter))
+        print(markers_tsne)
+        print(colors_tsne)
+        data_tsne = Calculate_TSNE(embeddings, n_iter=n_iter)
+        Visualization(data_tsne, f"./embeddings/{model_name}_TSNE", colors_tsne=colors_tsne, markers_tsne=markers_tsne, colors_edge=colors_edge)

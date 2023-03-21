@@ -14,6 +14,7 @@ from text import text_to_sequence
 import pyopenjtalk
 import subprocess
 from utils.tools import add_prefix2phone, pp_symbols, openjtalk2julius
+from korean_romanizer.romanizer import Romanizer
 import pdb
 
 abbv_language = {
@@ -61,23 +62,48 @@ def load_lexicon_phone_mfa(filename):
             lexicon_phone[lexicon] = phone.strip()
     return lexicon_phone
 
+# def preprocess_english(text, preprocess_config, **kwargs):
+#     text = text.rstrip(punctuation)
+#     lexicon = read_lexicon(os.path.join(path_absolute,"..", "lexicon/dictionary/english-lexicon.txt"))
+#     pdb.set_trace()
+#     g2p = G2p()
+#     phones = []
+#     words = re.split(r"([,;.\-\?\!\s+])", text)
+#     for w in words:
+#         if w.lower() in lexicon:
+#             phones += lexicon[w.lower()]
+#         else:
+#             phones += list(filter(lambda p: p != " ", g2p(w)))
+#     phones = add_prefix2phone(phones, lang="english")
+#     phones = "{" + "}{".join(phones) + "}"
+#     pdb.set_trace()
+#     phones = re.sub(r"\{[^\w\s]?\}", "{sp}", phones)
+#     phones = phones.replace("}{", " ")
+#     pdb.set_trace()
+#     sequence = np.array(
+#         text_to_sequence(
+#             phones, preprocess_config["preprocessing"]["text"]["text_cleaners"]
+#         )
+#     )
+#
+#     return np.array(sequence)
+
 def preprocess_english(text, preprocess_config, **kwargs):
     text = text.rstrip(punctuation)
     lexicon = read_lexicon(os.path.join(path_absolute,"..", "lexicon/dictionary/english-lexicon.txt"))
 
     g2p = G2p()
     phones = []
-    words = re.split(r"([,;.\-\?\!\s+])", text)
+    words = text.split(" ")
     for w in words:
         if w.lower() in lexicon:
             phones += lexicon[w.lower()]
+        elif w in [",", "."]:
+            phones += ["sp"]
         else:
             phones += list(filter(lambda p: p != " ", g2p(w)))
     phones = add_prefix2phone(phones, lang="english")
-    phones = "{" + "}{".join(phones) + "}"
-    phones = re.sub(r"\{[^\w\s]?\}", "{sp}", phones)
-    phones = phones.replace("}{", " ")
-
+    phones = "{" + " ".join(phones) + "}"
     sequence = np.array(
         text_to_sequence(
             phones, preprocess_config["preprocessing"]["text"]["text_cleaners"]
@@ -130,6 +156,39 @@ def preprocess_japanese(text, preprocess_config, **kwargs):
 
     return np.array(sequence)
 
+def preprocess_korean(text, preprocess_config, **kwargs):
+    language = "korean"
+    lexicon = load_lexicon_phone_mfa(os.path.join(path_absolute,"..", f"lexicon/dictionary/korean_espeak.txt"))
+    if kwargs.get("hangeul", None): # use pinyin
+        r = Romanizer(text)
+        text = r.romanize()
+    else:
+        text = text.strip()
+    words = text.split(" ")
+    phones = []
+    for word in words:
+        if word in lexicon:
+            phones += lexicon[word.lower()].split()
+        elif word in [",", "."]:
+            phones += "sp"
+        else:
+            command = "echo {0} | phonemize -l {1} -b espeak --language-switch remove-flags -p '-' -s '|' --strip".format(
+                word, abbv_language[language])
+            phoneme = subprocess.getstatusoutput(command)[1].split("\n")[-1]
+            phoneme = phoneme.replace("-", " ")
+            phoneme = phoneme.strip().split()
+            if len(phoneme) == 0: continue
+            phones += phoneme
+            print("Out of Vocabulary: ", word, phoneme)
+    phones = add_prefix2phone(phones, lang=language)
+    phones = "{" + " ".join(phones) + "}"
+    sequence = np.array(
+        text_to_sequence(
+            phones, preprocess_config["preprocessing"]["text"]["text_cleaners"]
+        )
+    )
+    return np.array(sequence)
+
 def preprocess_language(text, preprocess_config, language, **kwargs):
     lexicon = load_lexicon_phone_mfa(os.path.join(path_absolute,"..", f"lexicon/dictionary/{language}_espeak.txt"))
     words = text.split(" ")
@@ -137,6 +196,8 @@ def preprocess_language(text, preprocess_config, language, **kwargs):
     for word in words:
         if word in lexicon:
             phones += lexicon[word.lower()].split()
+        elif word in [",","."]:
+            phones += "sp"
         else:
             command = "echo {0} | phonemize -l {1} -b espeak --language-switch remove-flags -p '-' -s '|' --strip".format(word, abbv_language[language])
             phoneme = subprocess.getstatusoutput(command)[1].split("\n")[-1]
@@ -162,5 +223,7 @@ def processes_all_languages(text, language, preprocess_config, **kwargs):
         return preprocess_english(text, preprocess_config, **kwargs)
     elif language == "japanese":
         return preprocess_japanese(text, preprocess_config, **kwargs)
+    elif language == "korean":
+        return preprocess_korean(text, preprocess_config, **kwargs)
     else:
         return preprocess_language(text, preprocess_config, language, **kwargs)

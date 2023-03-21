@@ -4,6 +4,7 @@ import numpy as np
 
 import transformer.Constants as Constants
 from .Layers import FFTBlock, FFTBlock_StyleSpeech
+from .Layers import FFTBlock_StyleSpeech_StyleLanguage
 from text.symbols import symbols
 import pdb
 
@@ -365,7 +366,7 @@ class Encoder_StyleSpeech_Discriminator(nn.Module):
             position_embedded = get_sinusoid_encoding_table(src_seq.shape[1], self.d_model)[:src_seq.shape[1], :].unsqueeze(0).expand(batch_size, -1, -1).to(src_seq.device)
         else:
             position_embedded = self.position_enc[:, :max_len, :].expand(batch_size, -1, -1)
-        
+
         enc_output = src_embedded + position_embedded
         enc_slf_attn_list = []
         for enc_layer in self.layer_stack:
@@ -376,3 +377,142 @@ class Encoder_StyleSpeech_Discriminator(nn.Module):
                 enc_slf_attn_list += [enc_slf_attn]
 
         return enc_output, src_embedded, enc_slf_attn_list
+
+class Encoder_StyleSpeech_StyleLanguage(nn.Module):
+    """ Encoder """
+
+    def __init__(self, config):
+        super(Encoder_StyleSpeech_StyleLanguage, self).__init__()
+
+        n_position = config["max_seq_len"] + 1
+        n_src_vocab = len(symbols)
+        # n_src_vocab = 127 + 1
+        d_word_vec = config["transformer"]["encoder_hidden"]
+        n_layers = config["transformer"]["encoder_layer"]
+        n_head = config["transformer"]["encoder_head"]
+        d_k = d_v = (
+            config["transformer"]["encoder_hidden"]
+            // config["transformer"]["encoder_head"]
+        )
+        d_model = config["transformer"]["encoder_hidden"]
+        d_inner = config["transformer"]["conv_filter_size"]
+        kernel_size = config["transformer"]["conv_kernel_size"]
+        dropout = config["transformer"]["encoder_dropout"]
+        style_dim = config["mel_style"]["style_vector_dim"]
+        self.max_seq_len = config["max_seq_len"]
+        self.d_model = d_model
+
+        self.src_word_emb = nn.Embedding(
+            n_src_vocab, d_word_vec, padding_idx=Constants.PAD
+        )
+        self.position_enc = nn.Parameter(
+            get_sinusoid_encoding_table(n_position, d_word_vec).unsqueeze(0),
+            requires_grad=False,
+        )
+
+        self.layer_stack = nn.ModuleList(
+            [
+                FFTBlock_StyleSpeech_StyleLanguage(
+                    d_model, n_head, d_k, d_v, d_inner, kernel_size, style_dim, dropout=dropout
+                )
+                for _ in range(n_layers)
+            ]
+        )
+
+    def forward(self, src_seq, style_vector, lang_vector, mask, return_attns=False):
+        batch_size, max_len = src_seq.shape[0], src_seq.shape[1]
+
+        # -- Prepare masks
+        slf_attn_mask = mask.unsqueeze(1).expand(-1, max_len, -1)
+
+        # -- Forward
+        src_embedded = self.src_word_emb(src_seq)
+        if not self.training and src_seq.shape[1] > self.max_seq_len:
+            position_embedded = get_sinusoid_encoding_table(src_seq.shape[1], self.d_model)[:src_seq.shape[1],
+                                :].unsqueeze(0).expand(batch_size, -1, -1).to(src_seq.device)
+        else:
+            position_embedded = self.position_enc[:, :max_len, :].expand(batch_size, -1, -1)
+
+        enc_output = src_embedded + position_embedded
+        enc_slf_attn_list = []
+        for enc_layer in self.layer_stack:
+            enc_output, enc_slf_attn = enc_layer(
+                enc_output, style_vector, lang_vector, mask=mask, slf_attn_mask=slf_attn_mask
+            )
+            if return_attns:
+                enc_slf_attn_list += [enc_slf_attn]
+
+        return enc_output
+
+
+class Decoder_StyleSpeech_StyleLanguage(nn.Module):
+    """ Decoder """
+
+    def __init__(self, config):
+        super(Decoder_StyleSpeech_StyleLanguage, self).__init__()
+
+        n_position = config["max_seq_len"] + 1
+        d_word_vec = config["transformer"]["decoder_hidden"]
+        n_layers = config["transformer"]["decoder_layer"]
+        n_head = config["transformer"]["decoder_head"]
+        d_k = d_v = (
+            config["transformer"]["decoder_hidden"]
+            // config["transformer"]["decoder_head"]
+        )
+        d_model = config["transformer"]["decoder_hidden"]
+        d_inner = config["transformer"]["conv_filter_size"]
+        kernel_size = config["transformer"]["conv_kernel_size"]
+        dropout = config["transformer"]["decoder_dropout"]
+
+        style_dim = config["mel_style"]["style_vector_dim"]
+        self.max_seq_len = config["max_seq_len"]
+        self.d_model = d_model
+
+        self.position_enc = nn.Parameter(
+            get_sinusoid_encoding_table(n_position, d_word_vec).unsqueeze(0),
+            requires_grad=False,
+        )
+
+        self.layer_stack = nn.ModuleList(
+            [
+                FFTBlock_StyleSpeech_StyleLanguage(
+                    d_model, n_head, d_k, d_v, d_inner, kernel_size, style_dim, dropout=dropout
+                )
+                for _ in range(n_layers)
+            ]
+        )
+
+    def forward(self, enc_seq, style_vector, lang_vector, mask, return_attns=False):
+
+        dec_slf_attn_list = []
+        batch_size, max_len = enc_seq.shape[0], enc_seq.shape[1]
+
+        # -- Forward
+        if not self.training and enc_seq.shape[1] > self.max_seq_len:
+            # -- Prepare masks
+            slf_attn_mask = mask.unsqueeze(1).expand(-1, max_len, -1)
+            dec_output = enc_seq + get_sinusoid_encoding_table(
+                enc_seq.shape[1], self.d_model
+            )[: enc_seq.shape[1], :].unsqueeze(0).expand(batch_size, -1, -1).to(
+                enc_seq.device
+            )
+        else:
+            max_len = min(max_len, self.max_seq_len)
+
+            # -- Prepare masks
+            slf_attn_mask = mask.unsqueeze(1).expand(-1, max_len, -1)
+            dec_output = enc_seq[:, :max_len, :] + self.position_enc[
+                                                   :, :max_len, :
+                                                   ].expand(batch_size, -1, -1)
+            mask = mask[:, :max_len]
+            slf_attn_mask = slf_attn_mask[:, :, :max_len]
+
+        for dec_layer in self.layer_stack:
+            dec_output, dec_slf_attn = dec_layer(
+                dec_output, style_vector, lang_vector, mask=mask, slf_attn_mask=slf_attn_mask
+            )
+            if return_attns:
+                dec_slf_attn_list += [dec_slf_attn]
+
+        return dec_output, mask
+

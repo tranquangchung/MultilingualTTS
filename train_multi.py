@@ -9,9 +9,12 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
 from utils.model import get_vocoder, get_param_num, get_model_fastSpeech2_StyleEncoder_MultiLanguage
+from utils.model import get_model_fastSpeech2_StyleEncoder_MultiLanguage_1
 from utils.tools import to_device, log, synth_one_sample, synth_one_sample_multilingual
 from model import FastSpeech2Loss_MultiLingual
 from dataset_multi import Dataset
+from utils.model import vocoder_infer
+from scipy.io.wavfile import write
 
 from evaluate import evaluate, evaluate_multilingual
 import pdb
@@ -41,7 +44,7 @@ def main(args, configs):
 
     # Prepare model
     # model, optimizer = get_model(args, configs, device, train=True)
-    model, optimizer = get_model_fastSpeech2_StyleEncoder_MultiLanguage(args, configs, device, train=True)
+    model, optimizer = get_model_fastSpeech2_StyleEncoder_MultiLanguage_1(args, configs, device, train=False)
 
     model = nn.DataParallel(model)
     num_param = get_param_num(model)

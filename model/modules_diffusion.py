@@ -23,7 +23,8 @@ from .blocks_diffusion import (
     Mish,
     DiffusionEmbedding,
     ResidualBlock,
-    ResidualStyleBlock
+    ResidualStyleBlock,
+    ResidualStyleLSBlock
 )
 from text.symbols import symbols
 import pdb
@@ -671,6 +672,71 @@ class DenoiserStyle(nn.Module):
         skip = []
         for layer in self.residual_layers:
             x, skip_connection = layer(x, conditioner, style, diffusion_step, mask)
+            skip.append(skip_connection)
+
+        x = torch.sum(torch.stack(skip), dim=0) / math.sqrt(len(self.residual_layers))
+        x = self.skip_projection(x)
+        x = F.relu(x)
+        x = self.output_projection(x)  # [B, 80, T]
+
+        return x[:, None, :, :]
+
+class DenoiserStyle_LS(nn.Module):
+    """ Conditional Diffusion Denoiser """
+
+    def __init__(self, preprocess_config, model_config):
+        super(DenoiserStyle_LS, self).__init__()
+        n_mel_channels = preprocess_config["preprocessing"]["mel"]["n_mel_channels"]
+        d_encoder = model_config["transformer"]["encoder_hidden"]
+        residual_channels = model_config["denoiser"]["residual_channels"]
+        residual_layers = model_config["denoiser"]["residual_layers"]
+        dropout = model_config["denoiser"]["denoiser_dropout"]
+        style_layers = model_config["mel_style"]["style_vector_dim"]
+        lang_layers = model_config["transformer"]["encoder_hidden"]
+
+        self.input_projection = ConvNorm(
+            n_mel_channels, residual_channels, kernel_size=1
+        )
+        self.diffusion_embedding = DiffusionEmbedding(residual_channels)
+        self.mlp = nn.Sequential(
+            LinearNorm(residual_channels, residual_channels * 4),
+            Mish(),
+            LinearNorm(residual_channels * 4, residual_channels)
+        )
+        self.residual_layers = nn.ModuleList(
+            [
+                ResidualStyleLSBlock(
+                    d_encoder, residual_channels, style_layers, lang_layers, dropout=dropout
+                )
+                for _ in range(residual_layers)
+            ]
+        )
+        self.skip_projection = ConvNorm(
+            residual_channels, residual_channels, kernel_size=1
+        )
+        self.output_projection = ConvNorm(
+            residual_channels, n_mel_channels, kernel_size=1
+        )
+        nn.init.zeros_(self.output_projection.conv.weight)
+
+    def forward(self, mel, diffusion_step, conditioner, style, lang_vector, mask=None):
+        """
+
+        :param mel: [B, 1, M, T]
+        :param diffusion_step: [B,]
+        :param conditioner: [B, M, T]
+        :return:
+        """
+        x = mel[:, 0]
+        x = self.input_projection(x)  # x [B, residual_channel, T]
+        x = F.relu(x)
+
+        diffusion_step = self.diffusion_embedding(diffusion_step)
+        diffusion_step = self.mlp(diffusion_step)
+
+        skip = []
+        for layer in self.residual_layers:
+            x, skip_connection = layer(x, conditioner, style, lang_vector, diffusion_step, mask)
             skip.append(skip_connection)
 
         x = torch.sum(torch.stack(skip), dim=0) / math.sqrt(len(self.residual_layers))

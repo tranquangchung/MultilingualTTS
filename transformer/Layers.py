@@ -6,7 +6,8 @@ import numpy as np
 from torch.nn import functional as F
 
 from .SubLayers import MultiHeadAttention, PositionwiseFeedForward, StyleAdaptiveLayerNorm
-
+from .SubLayers import StyleAdaptiveLayerNorm_StyleLanguage
+import pdb
 
 class FFTBlock(torch.nn.Module):
     """FFT Block"""
@@ -50,6 +51,57 @@ class FFTBlock_StyleSpeech(torch.nn.Module):
         enc_output = enc_output.masked_fill(mask.unsqueeze(-1), 0)
         enc_output = self.saln_1(enc_output, style_vector)
         return enc_output, enc_slf_attn
+
+class FFTBlock_StyleSpeech_StyleLanguage(torch.nn.Module):
+    """FFT Block"""
+
+    def __init__(self, d_model, n_head, d_k, d_v, d_inner, kernel_size, style_dim, dropout=0.1):
+        super(FFTBlock_StyleSpeech_StyleLanguage, self).__init__()
+        self.slf_attn = MultiHeadAttention(n_head, d_model, d_k, d_v, dropout=dropout)
+        self.pos_ffn = PositionwiseFeedForward(
+            d_model, d_inner, kernel_size, dropout=dropout
+        )
+        self.saln_1 = StyleAdaptiveLayerNorm(d_model, style_dim)
+        self.saln_language_1 = StyleAdaptiveLayerNorm_StyleLanguage(d_model, lang_dim=style_dim*2)
+
+    def forward(self, enc_input, style_vector, lang_vector, mask=None, slf_attn_mask=None):
+        enc_output, enc_slf_attn = self.slf_attn(
+            enc_input, enc_input, enc_input, mask=slf_attn_mask
+        )
+        enc_output = enc_output.masked_fill(mask.unsqueeze(-1), 0)
+
+        enc_output = self.pos_ffn(enc_output)
+        enc_output = enc_output.masked_fill(mask.unsqueeze(-1), 0)
+        enc_output = self.saln_1(enc_output, style_vector)
+        # enc_output = self.saln_language_1(enc_output, lang_vector)
+        return enc_output, enc_slf_attn
+
+# class FFTBlock_StyleSpeech_StyleLanguage(torch.nn.Module):
+#     """FFT Block"""
+#
+#     def __init__(self, d_model, n_head, d_k, d_v, d_inner, kernel_size, style_dim, dropout=0.1):
+#         super(FFTBlock_StyleSpeech_StyleLanguage, self).__init__()
+#         self.slf_attn = MultiHeadAttention(n_head, d_model, d_k, d_v, dropout=dropout)
+#         self.pos_ffn = PositionwiseFeedForward(
+#             d_model, d_inner, kernel_size, dropout=dropout
+#         )
+#         self.saln_style_1 = StyleAdaptiveLayerNorm(d_model, style_dim)
+#         # self.saln_language_1 = StyleAdaptiveLayerNorm_StyleLanguage(d_model, lang_dim=style_dim*2)
+#
+#     def forward(self, enc_input, style_vector, lang_vector, mask=None, slf_attn_mask=None):
+#         enc_output, enc_slf_attn = self.slf_attn(
+#             enc_input, enc_input, enc_input, mask=slf_attn_mask
+#         )
+#         enc_output = enc_output.masked_fill(mask.unsqueeze(-1), 0)
+#
+#         enc_output = self.pos_ffn(enc_output)
+#         enc_output = enc_output.masked_fill(mask.unsqueeze(-1), 0)
+#         enc_output = self.saln_style_1(enc_output, style_vector)
+#         # enc_output += lang_vector
+#         # pdb.set_trace()
+#         # enc_output = self.saln_language_1(enc_output, lang_vector)
+#         return enc_output, enc_slf_attn
+
 
 class ConvNorm(torch.nn.Module):
     def __init__(

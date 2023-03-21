@@ -744,3 +744,88 @@ class ResidualStyleBlock(nn.Module):
         residual, skip = torch.chunk(y, 2, dim=1)
 
         return (x + residual) / math.sqrt(2.0), skip
+
+class StyleNAdaptiveLayerNormV2(nn.Module):
+  def __init__(self, in_channel, style_dim):
+    super(StyleNAdaptiveLayerNormV2, self).__init__()
+    self.in_channel = in_channel
+    self.norm = nn.LayerNorm(in_channel, elementwise_affine=False)
+
+    self.style = AffineLinear(style_dim, in_channel * 2)
+    self.style.affine.bias.data[:in_channel] = 1
+    self.style.affine.bias.data[in_channel:] = 0
+    self.norm_tanh = nn.Tanh()
+
+
+  def forward(self, input, style_code):
+    # style
+    style = self.style(style_code).unsqueeze(1)
+    gamma, beta = style.chunk(2, dim=-1)
+
+    input = torch.transpose(input, 2, 1)
+    out = self.norm(input)
+    out = gamma * out + beta
+    # out = self.norm_tanh(out)
+    return torch.transpose(out, 2, 1)
+
+
+class StyleLSAdaptiveLayerNorm(nn.Module):
+  def __init__(self, in_channel, lang_dim):
+    super(StyleLSAdaptiveLayerNorm, self).__init__()
+    self.in_channel = in_channel
+    self.norm = nn.LayerNorm(in_channel, elementwise_affine=False)
+
+    self.lang = AffineLinear(lang_dim, in_channel * 2)
+    self.lang.affine.bias.data[:in_channel] = 1
+    self.lang.affine.bias.data[in_channel:] = 0
+    self.norm_tanh = nn.Tanh()
+
+  def forward(self, input, lang_code):
+    lang = self.lang(lang_code).unsqueeze(1)
+    gamma, beta = lang.chunk(2, dim=-1)
+
+    input = torch.transpose(input, 2, 1)
+    out = self.norm(input)
+    out = gamma * out + beta
+    # out = self.norm_tanh(out)
+
+    return torch.transpose(out, 2, 1)
+
+class ResidualStyleLSBlock(nn.Module):
+    """ Residual Block """
+
+    def __init__(self, d_encoder, residual_channels, style_layers, lang_layers, dropout):
+        super(ResidualStyleLSBlock, self).__init__()
+        self.conv_layer = ConvNorm(
+            residual_channels,
+            2 * residual_channels,
+            kernel_size=3,
+            stride=1,
+            padding=int((3 - 1) / 2),
+            dilation=1,
+        )
+        self.diffusion_projection = LinearNorm(residual_channels, residual_channels)
+        self.style_projection = StyleAdaptiveLayerNorm(residual_channels * 2, style_layers)
+        self.lang_projection = StyleLSAdaptiveLayerNorm(residual_channels * 2, lang_layers)
+        self.conditioner_projection = ConvNorm(
+            d_encoder, 2 * residual_channels, kernel_size=1
+        )
+        self.output_projection = ConvNorm(
+            residual_channels, 2 * residual_channels, kernel_size=1
+        )
+
+    def forward(self, x, conditioner, style_vector, lang_vector, diffusion_step, mask=None):
+        diffusion_step = self.diffusion_projection(diffusion_step).unsqueeze(-1)
+        conditioner = self.conditioner_projection(conditioner)
+        y = x + diffusion_step
+        y = self.conv_layer(y) + conditioner
+        y = self.style_projection(y, style_vector)
+        # y = self.lang_projection(y, lang_vector)
+
+        gate, filter = torch.chunk(y, 2, dim=1)
+        y = torch.sigmoid(gate) * torch.tanh(filter)
+
+        y = self.output_projection(y)
+        residual, skip = torch.chunk(y, 2, dim=1)
+
+        return (x + residual) / math.sqrt(2.0), skip

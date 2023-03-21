@@ -255,19 +255,24 @@ def evaluate_multilingual_diffusion(model, step, configs, logger=None, vocoder=N
 
     # Evaluation
     loss_sums = [0 for _ in range(7)]
+    batch_final = None
+    output_final = None
     for batchs in loader:
         for batch in batchs:
             batch = to_device(batch, device)
+            batch_final = batch
             if len(batch[0]) == 1: continue
             with torch.no_grad():
                 # Forward
                 output = model(*(batch[2:]))
+                output_final = output
 
                 # Cal Loss
                 losses = Loss(batch, output)
 
                 for i in range(len(losses)):
                     loss_sums[i] += losses[i].item() * len(batch[0])
+            break
 
     loss_means = [loss_sum / len(dataset) for loss_sum in loss_sums]
 
@@ -278,8 +283,8 @@ def evaluate_multilingual_diffusion(model, step, configs, logger=None, vocoder=N
 
     if logger is not None:
         fig, wav_reconstruction, wav_prediction, tag = synth_one_sample_multilingual_diffusion(
-            batch,
-            output,
+            batch_final,
+            output_final,
             vocoder,
             model_config,
             preprocess_config,
